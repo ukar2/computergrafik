@@ -4,6 +4,7 @@
 MyGLWidget::MyGLWidget(QWidget *parent) :
     QOpenGLWidget(parent)
 {
+    wheel = 0;
     moveX = 0.0f;
     moveY = 0.0f;
     moveZ = -7.0f;
@@ -82,6 +83,77 @@ void MyGLWidget::resizeGL(int w, int h)
 }
 
 
+void MyGLWidget::keyPressEvent(QKeyEvent *event)
+{
+    switch(event->key())
+    {
+    case Qt::Key_W:
+        moveY++;
+        break;
+    case Qt::Key_S:
+        moveY--;
+        break;
+    case Qt::Key_A:
+        moveX--;
+        break;
+    case Qt::Key_D:
+        moveX++;
+        break;
+    case Qt::Key_Up:
+        moveY++;
+        break;
+    case Qt::Key_Down:
+        moveY--;
+        break;
+    case Qt::Key_Left:
+        moveX--;
+        break;
+    case Qt::Key_Right:
+        moveX++;
+        break;
+    default:
+        event->ignore();
+        break;
+    }
+    this->update();
+    event->accept();
+}
+
+
+void MyGLWidget::wheelEvent(QWheelEvent *event)
+{
+    int deltaValue = event->delta();
+
+    if(wheel >= -5 && wheel <= 5)
+    {
+        if(deltaValue < 0){
+            moveZ++;
+            wheel++;
+        }
+        else if(deltaValue > 0){
+            moveZ--;
+            wheel--;
+        }else{
+
+        }
+
+        if(wheel == -6){
+            moveZ++;
+            wheel++;
+        }
+        if(wheel == 6){
+            moveZ--;
+            wheel--;
+        }
+
+        emit wheelValueForZChanged(wheel);
+        this->update();
+    }
+
+    event->accept();
+}
+
+
 void MyGLWidget::receiveRotationX(int angle)
 {
     rotationAngle = angle;
@@ -108,6 +180,7 @@ void MyGLWidget::receiveRotationZ(int angle)
     rotationZ = 1.0f;
     this->update();
 }
+
 
 MyGLWidget::~MyGLWidget()
 {

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>824</width>
-    <height>570</height>
+    <height>422</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -80,6 +80,9 @@
            </item>
            <item>
             <widget class="QSlider" name="hrlSliderRotateX">
+             <property name="focusPolicy">
+              <enum>Qt::NoFocus</enum>
+             </property>
              <property name="maximum">
               <number>359</number>
              </property>
@@ -125,6 +128,9 @@
            </item>
            <item>
             <widget class="QSlider" name="hrlSliderRotateY">
+             <property name="focusPolicy">
+              <enum>Qt::NoFocus</enum>
+             </property>
              <property name="maximum">
               <number>359</number>
              </property>
@@ -178,8 +184,62 @@
            </item>
            <item>
             <widget class="QSlider" name="hrlSliderRotateZ">
+             <property name="focusPolicy">
+              <enum>Qt::NoFocus</enum>
+             </property>
              <property name="maximum">
               <number>359</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_4">
+           <item>
+            <widget class="QLabel" name="lblZoom">
+             <property name="font">
+              <font>
+               <family>Verdana</family>
+               <pointsize>12</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>Zoom</string>
+             </property>
+             <property name="margin">
+              <number>8</number>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QSpinBox" name="spbZoom">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+             <property name="minimum">
+              <number>-6</number>
+             </property>
+             <property name="maximum">
+              <number>6</number>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QSlider" name="hrlSliderZoom">
+             <property name="focusPolicy">
+              <enum>Qt::NoFocus</enum>
+             </property>
+             <property name="minimum">
+              <number>-5</number>
+             </property>
+             <property name="maximum">
+              <number>5</number>
              </property>
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
