@@ -17,10 +17,19 @@ protected:
     void paintGL();
     void resizeGL(int w, int h);
 
+public slots:
+    void receiveRotationX(int);
+    void receiveRotationY(int);
+    void receiveRotationZ(int);
+
 private:
     GLfloat moveX;
     GLfloat moveY;
     GLfloat moveZ;
+    GLfloat rotationX;
+    GLfloat rotationY;
+    GLfloat rotationZ;
+    GLfloat rotationAngle;
 };
 
 #endif // MYGLWIDGET_H

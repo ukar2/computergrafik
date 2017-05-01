@@ -7,6 +7,11 @@ MyGLWidget::MyGLWidget(QWidget *parent) :
     moveX = 0.0f;
     moveY = 0.0f;
     moveZ = -7.0f;
+    rotationAngle = 0.0f;
+    rotationX = 0.0f;
+    rotationY = 0.0f;
+    rotationZ = 0.0f;
+
     setFocusPolicy(Qt::StrongFocus);
 }
 
@@ -31,7 +36,7 @@ void MyGLWidget::paintGL()
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     glTranslatef(moveX, moveY, moveZ);
-    glRotatef(40.0f, 0.0f, 1.0f, 0.0f);
+    glRotatef(rotationAngle, rotationX, rotationY, rotationZ);
 
     glBegin(GL_QUADS);
     // front side
@@ -74,6 +79,34 @@ void MyGLWidget::resizeGL(int w, int h)
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     glFrustum(-0.05, 0.05, -0.05, 0.05, 0.1, 100.0);
+}
+
+
+void MyGLWidget::receiveRotationX(int angle)
+{
+    rotationAngle = angle;
+    rotationX = 1.0f;
+    rotationY = 0.0f;
+    rotationZ = 0.0f;
+    this->update();
+}
+
+void MyGLWidget::receiveRotationY(int angle)
+{
+    rotationAngle = angle;
+    rotationX = 0.0f;
+    rotationY = 1.0f;
+    rotationZ = 0.0f;
+    this->update();
+}
+
+void MyGLWidget::receiveRotationZ(int angle)
+{
+    rotationAngle = angle;
+    rotationX = 0.0f;
+    rotationY = 0.0f;
+    rotationZ = 1.0f;
+    this->update();
 }
 
 MyGLWidget::~MyGLWidget()
