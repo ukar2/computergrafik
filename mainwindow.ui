@@ -66,10 +66,26 @@
             </widget>
            </item>
            <item>
-            <widget class="QSpinBox" name="spbRotationX"/>
+            <widget class="QSpinBox" name="spbRotationX">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+             <property name="maximum">
+              <number>359</number>
+             </property>
+             <property name="value">
+              <number>0</number>
+             </property>
+            </widget>
            </item>
            <item>
             <widget class="QSlider" name="hrlSliderRotateX">
+             <property name="maximum">
+              <number>359</number>
+             </property>
+             <property name="sliderPosition">
+              <number>0</number>
+             </property>
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
              </property>
@@ -98,10 +114,20 @@
             </widget>
            </item>
            <item>
-            <widget class="QSpinBox" name="spbRotationY"/>
+            <widget class="QSpinBox" name="spbRotationY">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+             <property name="maximum">
+              <number>359</number>
+             </property>
+            </widget>
            </item>
            <item>
             <widget class="QSlider" name="hrlSliderRotateY">
+             <property name="maximum">
+              <number>359</number>
+             </property>
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
              </property>
@@ -141,10 +167,20 @@
             </widget>
            </item>
            <item>
-            <widget class="QSpinBox" name="spbRotationZ"/>
+            <widget class="QSpinBox" name="spbRotationZ">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+             <property name="maximum">
+              <number>359</number>
+             </property>
+            </widget>
            </item>
            <item>
             <widget class="QSlider" name="hrlSliderRotateZ">
+             <property name="maximum">
+              <number>359</number>
+             </property>
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
              </property>
@@ -169,5 +205,54 @@
   </customwidget>
  </customwidgets>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>hrlSliderRotateX</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>spbRotationX</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>551</x>
+     <y>116</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>495</x>
+     <y>123</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>hrlSliderRotateY</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>spbRotationY</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>626</x>
+     <y>295</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>507</x>
+     <y>291</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>hrlSliderRotateZ</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>spbRotationZ</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>605</x>
+     <y>466</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>493</x>
+     <y>458</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
