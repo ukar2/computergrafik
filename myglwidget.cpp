@@ -31,12 +31,39 @@ void MyGLWidget::paintGL()
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     glTranslatef(moveX, moveY, moveZ);
+    glRotatef(40.0f, 0.0f, 1.0f, 0.0f);
 
     glBegin(GL_QUADS);
-        glColor4f(1.0f, 0.0f, 0.0f, 1.0f);  glVertex3f(-1.0f, -1.0f, 1.0f);
-        glColor4f(0.0f, 1.0f, 0.0f, 1.0f);  glVertex3f(1.0f, -1.0f, 1.0f);
-        glColor4f(0.0f, 0.0f, 1.0f, 1.0f);  glVertex3f(1.0f, 1.0f, 1.0f);
-        glColor4f(0.3f, 0.2f, 0.1f, 1.0f);  glVertex3f(-1.0f, 1.0f, 1.0f);
+    // front side
+        glColor4f(1.0f, 0.0f, 0.0f, 1.0f);        glVertex3f(-1.0f, -1.0f, 1.0f);
+        glColor4f(0.0f, 1.0f, 0.0f, 1.0f);        glVertex3f(1.0f, -1.0f, 1.0f);
+        glColor4f(0.0f, 0.0f, 1.0f, 1.0f);        glVertex3f(1.0f, 1.0f, 1.0f);
+        glColor4f(0.3f, 0.2f, 0.1f, 1.0f);        glVertex3f(-1.0f, 1.0f, 1.0f);
+    // left side
+        glColor4f(0.3f, 0.5f, 0.7f, 1.0f);        glVertex3f(-1.0f, -1.0f, -1.0f);
+        glColor4f(0.3f, 0.5f, 0.7f, 1.0f);        glVertex3f(-1.0f, -1.0f, 1.0f);
+        glColor4f(0.3f, 0.5f, 0.7f, 1.0f);        glVertex3f(-1.0f, 1.0f, 1.0f);
+        glColor4f(0.3f, 0.5f, 0.7f, 1.0f);        glVertex3f(-1.0f, 1.0f, -1.0f);
+    // back side
+        glColor4f(0.7f, 0.5f, 0.2f, 1.0f);        glVertex3f(1.0f, -1.0f, -1.0f);
+        glColor4f(0.7f, 0.5f, 0.2f, 1.0f);        glVertex3f(-1.0f, -1.0f, -1.0f);
+        glColor4f(0.7f, 0.5f, 0.2f, 1.0f);        glVertex3f(-1.0f, 1.0f, -1.0f);
+        glColor4f(0.7f, 0.5f, 0.2f, 1.0f);        glVertex3f(1.0f, 1.0f, -1.0f);
+    // right side
+        glColor4f(0.1f, 0.4f, 0.7f, 1.0f);        glVertex3f(1.0, -1.0,  1.0);
+        glColor4f(0.1f, 0.4f, 0.7f, 1.0f);        glVertex3f(1.0, -1.0, -1.0);
+        glColor4f(0.1f, 0.4f, 0.7f, 1.0f);        glVertex3f(1.0,  1.0, -1.0);
+        glColor4f(0.1f, 0.4f, 0.7f, 1.0f);        glVertex3f(1.0,  1.0,  1.0);
+    // on the top
+        glColor4f(0.5f, 0.1f, 0.5f, 1.0f);        glVertex3f(-1.0,  1.0, 1.0);
+        glColor4f(0.5f, 0.1f, 0.5f, 1.0f);        glVertex3f(1.0,  1.0,  1.0);
+        glColor4f(0.5f, 0.1f, 0.5f, 1.0f);        glVertex3f(1.0,  1.0,  -1.0);
+        glColor4f(0.5f, 0.1f, 0.5f, 1.0f);        glVertex3f(-1.0,  1.0, -1.0);
+    // on the bottom
+        glColor4f(0.5f, 0.1f, 0.8f, 1.0f);        glVertex3f( -1.0, -1.0, 1.0);
+        glColor4f(0.5f, 0.1f, 0.8f, 1.0f);        glVertex3f(  -1.0, -1.0, -1.0);
+        glColor4f(0.5f, 0.1f, 0.8f, 1.0f);        glVertex3f(  1.0, -1.0, -1.0);
+        glColor4f(0.5f, 0.1f, 0.8f, 1.0f);        glVertex3f( 1.0, -1.0,  1.0);
     glEnd();
     //glFlush();
 }

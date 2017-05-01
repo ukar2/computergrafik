@@ -46,6 +46,70 @@
         </property>
         <layout class="QVBoxLayout" name="verticalLayout">
          <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_3">
+           <item>
+            <widget class="QLabel" name="lblRotationX">
+             <property name="font">
+              <font>
+               <family>Verdana</family>
+               <pointsize>12</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>X</string>
+             </property>
+             <property name="margin">
+              <number>10</number>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QSpinBox" name="spbRotationX"/>
+           </item>
+           <item>
+            <widget class="QSlider" name="hrlSliderRotateX">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <item>
+            <widget class="QLabel" name="lblRotationY">
+             <property name="font">
+              <font>
+               <family>Verdana</family>
+               <pointsize>12</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>Y</string>
+             </property>
+             <property name="margin">
+              <number>10</number>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QSpinBox" name="spbRotationY"/>
+           </item>
+           <item>
+            <widget class="QSlider" name="hrlSliderRotateY">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
           <layout class="QHBoxLayout" name="hblRotationZ">
            <item>
             <widget class="QLabel" name="lblRotationZ">
@@ -55,8 +119,24 @@
                <height>16777215</height>
               </size>
              </property>
+             <property name="font">
+              <font>
+               <family>Verdana</family>
+               <pointsize>12</pointsize>
+               <weight>75</weight>
+               <italic>false</italic>
+               <bold>true</bold>
+               <kerning>false</kerning>
+              </font>
+             </property>
              <property name="text">
-              <string>RotationZ</string>
+              <string>Z</string>
+             </property>
+             <property name="margin">
+              <number>10</number>
+             </property>
+             <property name="textInteractionFlags">
+              <set>Qt::LinksAccessibleByMouse</set>
              </property>
             </widget>
            </item>
@@ -64,7 +144,7 @@
             <widget class="QSpinBox" name="spbRotationZ"/>
            </item>
            <item>
-            <widget class="QSlider" name="horizontalSlider">
+            <widget class="QSlider" name="hrlSliderRotateZ">
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
              </property>
