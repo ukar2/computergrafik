@@ -31,9 +31,9 @@ signals:
     void wheelValueForZChanged(int value);
 
 private:
-    int yn;
-    int xn;
-    int wheel;
+    GLint yn;
+    GLint xn;
+    GLint wheel;
     bool flag;
     GLfloat counter;
     GLfloat moveX;

@@ -4,8 +4,8 @@
 MyGLWidget::MyGLWidget(QWidget *parent) :
     QOpenGLWidget(parent)
 {
-    xn = 400;
-    yn = 400;
+    xn = 0;
+    yn = 0;
     flag = false;
     counter = 0.0f;
     wheel = 0;
@@ -42,6 +42,9 @@ void MyGLWidget::paintGL()
     glLoadIdentity();
     glTranslatef(moveX, moveY, moveZ);
     glRotatef(rotationAngle, rotationX, rotationY, rotationZ);
+    //glRotatef(rotationAngle, 1.0f, 0.0f, 0.0f);
+    //glRotatef(rotationAngle, 0.0f, 1.0f, 0.0f);
+    //glRotatef(rotationAngle, 0.0f, 0.0f, 1.0f);
     if(flag){
         glRotatef(counter, 0.0f, 1.0f, 0.0f);
     }
@@ -89,9 +92,9 @@ void MyGLWidget::paintGL()
 
 void MyGLWidget::resizeGL(int w, int h)
 {
-    xn = (0 + 1)*(w / 2) + 400;
-    yn = (0 + 1)*(h / 2) + 400;
-    glViewport(0, 0, xn, yn);
+    xn = (xn + 1)*(w / 2) + w;
+    yn = (yn + 1)*(h / 2) + h;
+    glViewport(0, 0, w, h);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     glFrustum(-0.05, 0.05, -0.05, 0.05, 0.1, 100.0);
