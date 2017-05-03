@@ -103,7 +103,7 @@ void MyGLWidget::resizeGL(int w, int h)
 
 void MyGLWidget::keyPressEvent(QKeyEvent *event)
 {
-  // qDebug()<< event->key();
+   // qDebug()<< event->key();
     switch(event->nativeVirtualKey())
     {
     case 87:
@@ -166,7 +166,7 @@ void MyGLWidget::wheelEvent(QWheelEvent *event)
         }
 
         emit wheelValueForZChanged(wheel);
-        this->update();
+        this->update(); // Widges wird upgedated
     }
 
     event->accept();
