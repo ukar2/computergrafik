@@ -16,7 +16,7 @@
   <widget class="QWidget" name="centralWidget">
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
-     <widget class="MyGLWidget" name="openGLWidget">
+     <widget class="MyGLWidget" name="openGLWidget" native="true">
       <property name="minimumSize">
        <size>
         <width>400</width>
@@ -231,18 +231,12 @@
             </widget>
            </item>
            <item>
-            <widget class="QSlider" name="hrlSliderZoom">
+            <widget class="QCheckBox" name="chkRotate">
              <property name="focusPolicy">
               <enum>Qt::NoFocus</enum>
              </property>
-             <property name="minimum">
-              <number>-5</number>
-             </property>
-             <property name="maximum">
-              <number>5</number>
-             </property>
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
+             <property name="text">
+              <string>Rotate</string>
              </property>
             </widget>
            </item>
@@ -260,8 +254,9 @@
  <customwidgets>
   <customwidget>
    <class>MyGLWidget</class>
-   <extends>QOpenGLWidget</extends>
+   <extends>QWidget</extends>
    <header>myglwidget.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

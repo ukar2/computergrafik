@@ -25,12 +25,17 @@ public slots:
     void receiveRotationX(int);
     void receiveRotationY(int);
     void receiveRotationZ(int);
+    void setChkBoxFlag(bool);
 
 signals:
     void wheelValueForZChanged(int value);
 
 private:
+    int yn;
+    int xn;
     int wheel;
+    bool flag;
+    GLfloat counter;
     GLfloat moveX;
     GLfloat moveY;
     GLfloat moveZ;

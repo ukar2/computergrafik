@@ -1,9 +1,13 @@
 #include "myglwidget.h"
-
+#include <QDebug>
 
 MyGLWidget::MyGLWidget(QWidget *parent) :
     QOpenGLWidget(parent)
 {
+    xn = 400;
+    yn = 400;
+    flag = false;
+    counter = 0.0f;
     wheel = 0;
     moveX = 0.0f;
     moveY = 0.0f;
@@ -38,6 +42,9 @@ void MyGLWidget::paintGL()
     glLoadIdentity();
     glTranslatef(moveX, moveY, moveZ);
     glRotatef(rotationAngle, rotationX, rotationY, rotationZ);
+    if(flag){
+        glRotatef(counter, 0.0f, 1.0f, 0.0f);
+    }
 
     glBegin(GL_QUADS);
     // front side
@@ -72,11 +79,19 @@ void MyGLWidget::paintGL()
         glColor4f(0.5f, 0.1f, 0.8f, 1.0f);        glVertex3f( 1.0, -1.0,  1.0);
     glEnd();
     //glFlush();
+
+    if(flag){
+        this->update();
+        counter++;
+    }
+
 }
 
 void MyGLWidget::resizeGL(int w, int h)
 {
-    glViewport(0, 0, w, h);
+    xn = (0 + 1)*(w / 2) + 400;
+    yn = (0 + 1)*(h / 2) + 400;
+    glViewport(0, 0, xn, yn);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     glFrustum(-0.05, 0.05, -0.05, 0.05, 0.1, 100.0);
@@ -85,30 +100,31 @@ void MyGLWidget::resizeGL(int w, int h)
 
 void MyGLWidget::keyPressEvent(QKeyEvent *event)
 {
-    switch(event->key())
+  // qDebug()<< event->key();
+    switch(event->nativeVirtualKey())
     {
-    case Qt::Key_W:
+    case 87:
         moveY++;
         break;
-    case Qt::Key_S:
+    case 83:
         moveY--;
         break;
-    case Qt::Key_A:
+    case 65:
         moveX--;
         break;
-    case Qt::Key_D:
+    case 68:
         moveX++;
         break;
-    case Qt::Key_Up:
+    case 38:
         moveY++;
         break;
-    case Qt::Key_Down:
+    case 40:
         moveY--;
         break;
-    case Qt::Key_Left:
+    case 37:
         moveX--;
         break;
-    case Qt::Key_Right:
+    case 39:
         moveX++;
         break;
     default:
@@ -181,6 +197,12 @@ void MyGLWidget::receiveRotationZ(int angle)
     this->update();
 }
 
+
+void MyGLWidget::setChkBoxFlag(bool value)
+{
+    flag = value;
+    this->update();
+}
 
 MyGLWidget::~MyGLWidget()
 {
