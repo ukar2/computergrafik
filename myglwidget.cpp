@@ -24,10 +24,10 @@ void MyGLWidget::initializeGL()
 {
     GLclampf depth = 1.0f;
 
-    glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
+    glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
-    glShadeModel(GL_SMOOTH);
+    glShadeModel(GL_SMOOTH);  // --- deprecated ---
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
     glClearDepth(depth);
@@ -38,10 +38,10 @@ void MyGLWidget::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    glTranslatef(moveX, moveY, moveZ);
-    glRotatef(rotationAngle, rotationX, rotationY, rotationZ);
+    glMatrixMode(GL_MODELVIEW);  // -- deprecated ---
+    glLoadIdentity();              // --- deprecated ---
+    glTranslatef(moveX, moveY, moveZ);   // --- deprecated ---
+    glRotatef(rotationAngle, rotationX, rotationY, rotationZ);  // --- deprecated ---
     //glRotatef(rotationAngle, 1.0f, 0.0f, 0.0f);
     //glRotatef(rotationAngle, 0.0f, 1.0f, 0.0f);
     //glRotatef(rotationAngle, 0.0f, 0.0f, 1.0f);
