@@ -4,8 +4,8 @@
 MyGLWidget::MyGLWidget(QWidget *parent) :
     QOpenGLWidget(parent)
 {
-    xn = 0;
-    yn = 0;
+    x = 0;
+    y = 0;
     flag = false;
     counter = 0.0f;
     wheel = 0;
@@ -47,6 +47,7 @@ void MyGLWidget::paintGL()
         // glRotatef(counter, 0.0f, 1.0f, 0.0f);           --- deprecated ---
     }
 
+    /* --- depricated ---
     glBegin(GL_QUADS);
     // front side
         glColor4f(1.0f, 0.0f, 0.0f, 1.0f);        glVertex3f(-1.0f, -1.0f, 1.0f);
@@ -78,8 +79,9 @@ void MyGLWidget::paintGL()
         glColor4f(0.5f, 0.1f, 0.8f, 1.0f);        glVertex3f(  -1.0, -1.0, -1.0);
         glColor4f(0.5f, 0.1f, 0.8f, 1.0f);        glVertex3f(  1.0, -1.0, -1.0);
         glColor4f(0.5f, 0.1f, 0.8f, 1.0f);        glVertex3f( 1.0, -1.0,  1.0);
-    glEnd();
-    //glFlush();
+    glEnd();*/
+
+    glFlush();
 
     if(flag){
         this->update();
@@ -90,18 +92,17 @@ void MyGLWidget::paintGL()
 
 void MyGLWidget::resizeGL(int w, int h)
 {
-    xn = (xn + 1)*(w / 2) + w;
-    yn = (yn + 1)*(h / 2) + h;
-    glViewport(0, 0, w, h);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glFrustum(-0.05, 0.05, -0.05, 0.05, 0.1, 100.0);
+    x = (400 + 1)*(w / 2) + 0;
+    y = (400 + 1)*(h / 2) + 0;
+    glViewport(x, y, w, h);
+    // glMatrixMode(GL_PROJECTION);     --- deprecated ---
+    // glLoadIdentity();                --- deprecated ---
+    // glFrustum(-0.05, 0.05, -0.05, 0.05, 0.1, 100.0);     --- deprecated ---
 }
 
 
 void MyGLWidget::keyPressEvent(QKeyEvent *event)
 {
-   // qDebug()<< event->key();
     switch(event->nativeVirtualKey())
     {
     case 87:
