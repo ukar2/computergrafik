@@ -1,5 +1,4 @@
 #include "myglwidget.h"
-#include <QDebug>
 
 MyGLWidget::MyGLWidget(QWidget *parent) :
     QOpenGLWidget(parent), vbo(QOpenGLBuffer::VertexBuffer), ibo(QOpenGLBuffer::IndexBuffer)
@@ -21,14 +20,11 @@ MyGLWidget::MyGLWidget(QWidget *parent) :
     vbo.bind();
     vbo.setUsagePattern(QOpenGLBuffer::StaticDraw);
     vbo.allocate(vertices, sizeof(GLfloat) * 4 * 8);
-    // vbo.release();
 
     ibo.create();
     ibo.bind();
     ibo.setUsagePattern(QOpenGLBuffer::StaticDraw);
     vbo.allocate(indices, sizeof(GLubyte) * 6);
-
-    // f = QOpenGLContext::currentContext()->functions();
 
     setFocusPolicy(Qt::StrongFocus);
 }
@@ -43,6 +39,14 @@ void MyGLWidget::initializeGL()
 
     glClearDepth(1.0f);
     glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
+
+    QOpenGLDebugLogger *debugLogger = new QOpenGLDebugLogger(this);
+    connect(debugLogger, SIGNAL(messageLogged(QOpenGLDebugMessage)), this, SLOT(onMessageLogged(QOpenGLDebugMessage)), Qt::DirectConnection);
+
+    if(debugLogger->initialize()){
+        debugLogger->startLogging(QOpenGLDebugLogger::SynchronousLogging);
+        debugLogger->enableMessages();
+    }
 }
 
 void MyGLWidget::paintGL()
@@ -50,6 +54,17 @@ void MyGLWidget::paintGL()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
+
+    /*
+     * QSurfaceFormat frmt = this->format();
+     * qDebug().nospace() << "OpenGL: " << frmt.majorVersion() << "." << frmt.minorVersion();
+     * qDebug().noquote() << "Profile: " << QMetaEnum::fromType<QSurfaceFormat::OpenGLContextProfile>().valueToKey(frmt.profile());
+     * qDebug().noquote() << "Options: " << QMetaEnum::fromType<QSurfaceFormat::FormatOption>().valueToKeys(frmt.options());
+     * qDebug().noquote() << "Renderable Type: " << QMetaEnum::fromType<QSurfaceFormat::RenderableType>().valueToKey(frmt.renderableType());
+     * qDebug().noquote() << "Swap Behavior: " << QMetaEnum::fromType<QSurfaceFormat::SwapBehavior>().valueToKey(frmt.swapBehavior());
+     * qDebug() << "Swap interval: " << frmt.swapInterval();
+     * QOpenGLContext *f = QOpenGLContext::currentContext()->functions();
+    */
 
     if(flag){
 
@@ -74,6 +89,11 @@ void MyGLWidget::resizeGL(int w, int h)
 
 }
 
+
+void MyGLWidget::onMessageLogged(QOpenGLDebugMessage message)
+{
+    qDebug() << message;
+}
 
 void MyGLWidget::keyPressEvent(QKeyEvent *event)
 {

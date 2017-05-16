@@ -9,6 +9,13 @@
 #include <QKeyEvent>
 #include <QWheelEvent>
 
+#include <QDebug>
+#include <QOpenGLDebugMessage>
+#include <QOpenGLDebugLogger>
+#include <QSurfaceFormat>
+#include <QMetaEnum>
+
+
 class MyGLWidget : public QOpenGLWidget
 {
     Q_OBJECT
@@ -23,6 +30,7 @@ protected:
     void resizeGL(int w, int h);
     void keyPressEvent(QKeyEvent *event);
     void wheelEvent(QWheelEvent *event);
+    void onMessageLogged(QOpenGLDebugMessage message);
 
 public slots:
     void receiveRotationX(int);
@@ -54,6 +62,7 @@ private:
 
     //QOpenGLFunctions *f;
     QOpenGLBuffer vbo, ibo;
+
 };
 
 #endif // MYGLWIDGET_H
