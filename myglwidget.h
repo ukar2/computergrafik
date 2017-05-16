@@ -2,6 +2,9 @@
 #define MYGLWIDGET_H
 
 #include <QOpenGLWidget>
+#include <QOpenGLBuffer>
+#include <QOpenGLContext>
+#include <QOpenGLFunctions>
 #include <QWidget>
 #include <QKeyEvent>
 #include <QWheelEvent>
@@ -43,6 +46,14 @@ private:
     GLfloat rotationY;
     GLfloat rotationZ;
     GLfloat rotationAngle;
+
+    GLfloat vertices[4*8];
+    GLubyte indices[6];
+    GLuint vboHandle;
+    GLuint indicesHandle;
+
+    //QOpenGLFunctions *f;
+    QOpenGLBuffer vbo, ibo;
 };
 
 #endif // MYGLWIDGET_H
