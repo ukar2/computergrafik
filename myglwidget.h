@@ -30,13 +30,13 @@ protected:
     void resizeGL(int w, int h);
     void keyPressEvent(QKeyEvent *event);
     void wheelEvent(QWheelEvent *event);
-    void onMessageLogged(QOpenGLDebugMessage message);
 
 public slots:
     void receiveRotationX(int);
     void receiveRotationY(int);
     void receiveRotationZ(int);
     void setChkBoxFlag(bool);
+    void onMessageLogged(QOpenGLDebugMessage);
 
 signals:
     void wheelValueForZChanged(int value);
@@ -60,9 +60,9 @@ private:
     GLuint vboHandle;
     GLuint indicesHandle;
 
-    //QOpenGLFunctions *f;
     QOpenGLBuffer vbo, ibo;
-
+    void init();
+    void initVetices();
 };
 
 #endif // MYGLWIDGET_H

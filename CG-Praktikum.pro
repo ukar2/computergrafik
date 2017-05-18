@@ -9,7 +9,7 @@ LIBS     += -lopengl32
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = P2
+TARGET = CG-Praktikum
 TEMPLATE = app
 
 # The following define makes your compiler emit warnings if you use
