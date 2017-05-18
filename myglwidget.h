@@ -12,7 +12,7 @@
 #include <QDebug>
 #include <QOpenGLDebugMessage>
 #include <QOpenGLDebugLogger>
-#include <QSurfaceFormat>
+#include <QSurface>
 #include <QMetaEnum>
 
 
@@ -55,14 +55,17 @@ private:
     GLfloat rotationZ;
     GLfloat rotationAngle;
 
-    GLfloat vertices[4*8];
+    GLfloat vertices[6*4+6*4];
     GLubyte indices[6];
     GLuint vboHandle;
     GLuint indicesHandle;
 
     QOpenGLBuffer vbo, ibo;
-    void init();
-    void initVetices();
+    QOpenGLContext *m_context;
+
+    void initializeComponents();
+    void initializeVertices();
+    void initializeVBO();
 };
 
 #endif // MYGLWIDGET_H

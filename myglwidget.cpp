@@ -3,20 +3,7 @@
 MyGLWidget::MyGLWidget(QWidget *parent) :
     QOpenGLWidget(parent), vbo(QOpenGLBuffer::VertexBuffer), ibo(QOpenGLBuffer::IndexBuffer)
 {
-    x = 0;
-    y = 0;
-    flag = false;
-    counter = 0.0f;
-    wheel = 0;
-    moveX = 0.0f;
-    moveY = 0.0f;
-    moveZ = -7.0f;
-    rotationAngle = 0.0f;
-    rotationX = 0.0f;
-    rotationY = 0.0f;
-    rotationZ = 0.0f;
-
-    setFocusPolicy(Qt::StrongFocus);
+   setFocusPolicy(Qt::StrongFocus);
 }
 
 void MyGLWidget::initializeGL()
@@ -29,45 +16,49 @@ void MyGLWidget::initializeGL()
         debugLogger->enableMessages();
     }
 
-    glEnable(GL_CULL_FACE);
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LEQUAL);
+    QOpenGLFunctions *f = QOpenGLContext::currentContext()->functions();
 
-    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+    f->glEnable(GL_CULL_FACE);
+    f->glEnable(GL_DEPTH_TEST);
+    f->glDepthFunc(GL_LEQUAL);
 
-    glClearDepth(1.0f);
-    glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
+    f->glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
-    initVetices();
-    init();
+    f->glClearDepthf(1.0f);
+    f->glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
+
+    initializeComponents();
+    initializeVertices();
+    initializeVBO();
 }
 
 void MyGLWidget::paintGL()
 {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    vbo.bind();
-    ibo.bind();
     QOpenGLFunctions *f = QOpenGLContext::currentContext()->functions();
 
-    f->glEnable(GL_VERTEX_ARRAY);
-    f->glEnable(GL_COLOR_ARRAY);
-    f->glVertexAttribPointer(0, 4, GL_FLOAT, true, sizeof(GLfloat) * 8, (char*)NULL + 0);
+    f->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    vbo.bind();
+    ibo.bind();
 
     if(flag){
 
     }
-//GLint size, GLenum type, GLsizei strite
 
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_COLOR_ARRAY);
-    glVertexPointer(4, GL_FLOAT, sizeof(GLfloat) * 8, (char*)NULL + 0);
-    glColorPointer(4, GL_FLOAT, sizeof(GLfloat) * 8, (char*)NULL + sizeof(GLfloat) * 4);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, indices);
+    // gl*ClientState, gl*Pointer, glDraw*
+    // glEnableClientState(GL_VERTEX_ARRAY); // --- dep (state-mashine sagen welchen Typ von Array möchte man benutzen)
+    // glVertexPointer(4, GL_FLOAT, sizeof(GLfloat) * 8, (char*)NULL + 0); // --- dep
+
+    // glEnableClientState(GL_COLOR_ARRAY);  // --- dep
+    // glColorPointer(4, GL_FLOAT, sizeof(GLfloat) * 4, (char*)NULL + sizeof(GLfloat) * 4); // --- dep
 
 
-    glDrawArrays(GL_TRIANGLES, 0, 4);
-    glFlush();
+
+    f->glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, indices); // (Primitive-Type, Anzahl der zu rendernden Elemente, Typ der Werte in indicies, Zeiger)
+    f->glFlush();
+
+    vbo.release();
+    ibo.release();
 
     if(flag){
         this->update();
@@ -86,25 +77,29 @@ void MyGLWidget::resizeGL(int w, int h)
 }
 
 
-void MyGLWidget::onMessageLogged(QOpenGLDebugMessage message)
+void MyGLWidget::initializeComponents()
 {
-    QSurfaceFormat frmt = this->format();
-    qDebug().nospace() << "OpenGL: " << frmt.majorVersion() << "." << frmt.minorVersion();
-    qDebug().noquote() << "Profile: " << QMetaEnum::fromType<QSurfaceFormat::OpenGLContextProfile>().valueToKey(frmt.profile());
-    qDebug().noquote() << "Options: " << QMetaEnum::fromType<QSurfaceFormat::FormatOption>().valueToKeys(frmt.options());
-    qDebug().noquote() << "Renderable Type: " << QMetaEnum::fromType<QSurfaceFormat::RenderableType>().valueToKey(frmt.renderableType());
-    qDebug().noquote() << "Swap Behavior: " << QMetaEnum::fromType<QSurfaceFormat::SwapBehavior>().valueToKey(frmt.swapBehavior());
-    qDebug() << "Swap interval: " << frmt.swapInterval();
-    qDebug() << message;
+    x = 0;
+    y = 0;
+    flag = false;
+    counter = 0.0f;
+    wheel = 0;
+    moveX = 0.0f;
+    moveY = 0.0f;
+    moveZ = -7.0f;
+    rotationAngle = 0.0f;
+    rotationX = 0.0f;
+    rotationY = 0.0f;
+    rotationZ = 0.0f;
 }
 
 
-void MyGLWidget::initVetices()
+void MyGLWidget::initializeVertices()
 {
     // 1. Vertex, Position
-    vertices[0] = 1.0f;
+    vertices[0] = -1.0f;
     vertices[1] = -1.0f;
-    vertices[2] = -7.0f;
+    vertices[2] = -5.0f;
     vertices[3] = 1.0f;
 
     // 1. Vertex, Color
@@ -115,8 +110,8 @@ void MyGLWidget::initVetices()
 
     // 2. Vertex, Position
     vertices[8] = 1.0f;
-    vertices[9] = 1.0f;
-    vertices[10] = -7.0f;
+    vertices[9] = -1.0f;
+    vertices[10] = -5.0f;
     vertices[11] = 1.0f;
 
     // 2. Vertex, Color
@@ -128,7 +123,7 @@ void MyGLWidget::initVetices()
     // 3. Vertex, Position
     vertices[16] = -1.0f;
     vertices[17] = 1.0f;
-    vertices[18] = -7.0f;
+    vertices[18] = -5.0f;
     vertices[19] = 1.0f;
 
     // 3. Vertex, Color
@@ -138,9 +133,9 @@ void MyGLWidget::initVetices()
     vertices[23] = 1.0f;
 
     // 4. Vertex, Position
-    vertices[8] = -1.0f;
-    vertices[9] = -1.0f;
-    vertices[10] = 0.0f;
+    vertices[8] = 1.0f;
+    vertices[9] = 1.0f;
+    vertices[10] = -5.0f;
     vertices[11] = 1.0f;
 
     // 4. Vertex, Color
@@ -157,18 +152,35 @@ void MyGLWidget::initVetices()
     indices[5] = 0;
 }
 
-void MyGLWidget::init()
+void MyGLWidget::initializeVBO()
 {
     vbo.create();
     vbo.bind();
     vbo.setUsagePattern(QOpenGLBuffer::StaticDraw);
     vbo.allocate(vertices, sizeof(GLfloat) * 4 * 8);
+    vbo.release();
 
     ibo.create();
     ibo.bind();
     ibo.setUsagePattern(QOpenGLBuffer::StaticDraw);
     ibo.allocate(indices, sizeof(GLubyte) * 6);
+    ibo.release();
 }
+
+
+
+void MyGLWidget::onMessageLogged(QOpenGLDebugMessage message)
+{
+    QSurfaceFormat frmt = this->format();
+    qDebug().nospace() << "OpenGL: " << frmt.majorVersion() << "." << frmt.minorVersion();
+    qDebug().noquote() << "Profile: " << QMetaEnum::fromType<QSurfaceFormat::OpenGLContextProfile>().valueToKey(frmt.profile());
+    qDebug().noquote() << "Options: " << QMetaEnum::fromType<QSurfaceFormat::FormatOption>().valueToKeys(frmt.options());
+    qDebug().noquote() << "Renderable Type: " << QMetaEnum::fromType<QSurfaceFormat::RenderableType>().valueToKey(frmt.renderableType());
+    qDebug().noquote() << "Swap Behavior: " << QMetaEnum::fromType<QSurfaceFormat::SwapBehavior>().valueToKey(frmt.swapBehavior());
+    qDebug() << "Swap interval: " << frmt.swapInterval();
+    qDebug() << message;
+}
+
 
 
 void MyGLWidget::keyPressEvent(QKeyEvent *event)
