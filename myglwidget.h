@@ -5,6 +5,8 @@
 #include <QOpenGLBuffer>
 #include <QOpenGLContext>
 #include <QOpenGLFunctions>
+#include <QOpenGLExtraFunctions>
+
 #include <QWidget>
 #include <QKeyEvent>
 #include <QWheelEvent>
@@ -55,13 +57,13 @@ private:
     GLfloat rotationZ;
     GLfloat rotationAngle;
 
-    GLfloat vertices[6*4+6*4];
-    GLubyte indices[6];
-    GLuint vboHandle;
-    GLuint indicesHandle;
+    GLfloat vertices[8][8];
+    GLubyte indices[24];
+    //GLuint vboHandle;
+    //GLuint indicesHandle;
 
     QOpenGLBuffer vbo, ibo;
-    QOpenGLContext *m_context;
+    //QOpenGLContext *m_context;
 
     void initializeComponents();
     void initializeVertices();

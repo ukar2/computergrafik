@@ -8,6 +8,10 @@ MyGLWidget::MyGLWidget(QWidget *parent) :
 
 void MyGLWidget::initializeGL()
 {
+    QOpenGLFunctions *f = QOpenGLContext::currentContext()->functions();
+
+    f->glEnable(GL_DEBUG_OUTPUT);
+
     QOpenGLDebugLogger *debugLogger = new QOpenGLDebugLogger(this);
     connect(debugLogger, SIGNAL(messageLogged(QOpenGLDebugMessage)), this, SLOT(onMessageLogged(QOpenGLDebugMessage)), Qt::DirectConnection);
 
@@ -16,12 +20,9 @@ void MyGLWidget::initializeGL()
         debugLogger->enableMessages();
     }
 
-    QOpenGLFunctions *f = QOpenGLContext::currentContext()->functions();
-
-    f->glEnable(GL_CULL_FACE);
     f->glEnable(GL_DEPTH_TEST);
     f->glDepthFunc(GL_LEQUAL);
-
+//glShadeModel(GL_SMOOTH);
     f->glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
     f->glClearDepthf(1.0f);
@@ -34,36 +35,39 @@ void MyGLWidget::initializeGL()
 
 void MyGLWidget::paintGL()
 {
+    QOpenGLExtraFunctions *extf = QOpenGLContext::currentContext()->extraFunctions();
     QOpenGLFunctions *f = QOpenGLContext::currentContext()->functions();
-
-    f->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     vbo.bind();
     ibo.bind();
 
+    f->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glMatrixMode(GL_MODELVIEW);         // --- dep
+    glLoadIdentity();                   // --- dep
+    glTranslatef(moveX, moveY, moveZ);  // --- dep
+    glRotatef(rotationAngle, rotationX, rotationY, rotationZ);  // --- dep
+
     if(flag){
+            glRotatef(counter, 0.0f, 1.0f, 0.0f);
+        }
 
-    }
+    extf->glEnableVertexAttribArray(0);
+    // Parameter: (Numer des Array der mit 'glEnable*(n)' aktiviert wurde, Anzahl Koordinaten eines Vertices, Type der Werte im Array, ..., Offset, Zeiger)
+    extf->glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (GLvoid*)NULL);
 
-    // gl*ClientState, gl*Pointer, glDraw*
-    // glEnableClientState(GL_VERTEX_ARRAY); // --- dep (state-mashine sagen welchen Typ von Array möchte man benutzen)
-    // glVertexPointer(4, GL_FLOAT, sizeof(GLfloat) * 8, (char*)NULL + 0); // --- dep
+    glEnableClientState(GL_COLOR_ARRAY);  // --- dep
+    glColorPointer(4, GL_FLOAT, sizeof(float) * 8, (GLvoid*)NULL + (sizeof(float) * 4));  // --- dep
 
-    // glEnableClientState(GL_COLOR_ARRAY);  // --- dep
-    // glColorPointer(4, GL_FLOAT, sizeof(GLfloat) * 4, (char*)NULL + sizeof(GLfloat) * 4); // --- dep
-
-
-
-    f->glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, indices); // (Primitive-Type, Anzahl der zu rendernden Elemente, Typ der Werte in indicies, Zeiger)
-    f->glFlush();
+    extf->glDrawElements(GL_QUADS, 24, GL_UNSIGNED_BYTE, (GLvoid*)NULL); // (Primitive-Type, Anzahl der zu rendernden Elemente, Typ der Werte in indicies, Zeiger)
+    extf->glFlush();
 
     vbo.release();
     ibo.release();
 
     if(flag){
-        this->update();
-        counter++;
-    }
+            this->update();
+            counter++;
+        }
 
 }
 
@@ -73,7 +77,9 @@ void MyGLWidget::resizeGL(int w, int h)
     x = (400 + 1)*(w / 2) + 0;
     y = (400 + 1)*(h / 2) + 0;
     glViewport(x, y, w, h);
-
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glFrustum(-0.05, 0.05, -0.05, 0.05, 0.1, 100.0);
 }
 
 
@@ -96,60 +102,46 @@ void MyGLWidget::initializeComponents()
 
 void MyGLWidget::initializeVertices()
 {
-    // 1. Vertex, Position
-    vertices[0] = -1.0f;
-    vertices[1] = -1.0f;
-    vertices[2] = -5.0f;
-    vertices[3] = 1.0f;
+    vertices[0][0] = -0.5f;     vertices[0][1] = -0.5f; vertices[0][2] = 0.5f;  vertices[0][3] = 1.0f;  vertices[0][4] = 1.0f;  vertices[0][5] = 0.0f;   vertices[0][6] = 0.0f; vertices[0][7] = 1.0f;
+    vertices[1][0] = 0.5f;      vertices[1][1] = -0.5f; vertices[1][2] = 0.5f;  vertices[1][3] = 1.0f;  vertices[1][4] = 0.0f;  vertices[1][5] = 1.0f;   vertices[1][6] = 0.0f; vertices[1][7] = 1.0f;
+    vertices[2][0] = 0.5f;      vertices[2][1] = 0.5f;  vertices[2][2] = 0.5f;  vertices[2][3] = 1.0f;  vertices[2][4] = 0.0f;  vertices[2][5] = 0.0f;   vertices[2][6] = 1.0f; vertices[2][7] = 1.0f;
+    vertices[3][0] = -0.5f;     vertices[3][1] = 0.5f;  vertices[3][2] = 0.5f;  vertices[3][3] = 1.0f;  vertices[3][4] = 0.0f;  vertices[3][5] = 1.0f;   vertices[3][6] = 1.0f; vertices[3][7] = 1.0f;
 
-    // 1. Vertex, Color
-    vertices[4] = 1.0f;
-    vertices[5] = 0.0f;
-    vertices[6] = 0.0f;
-    vertices[7] = 1.0f;
+    vertices[4][0] = -0.5f;     vertices[4][1] = -0.5f; vertices[4][2] = -0.5f; vertices[4][3] = 1.0f;  vertices[4][4] = 1.0f;  vertices[4][5] = 1.0f;   vertices[4][6] = 0.0f; vertices[4][7] = 1.0f;
+    vertices[5][0] = 0.5f;      vertices[5][1] = -0.5f; vertices[5][2] = -0.5f; vertices[5][3] = 1.0f;  vertices[5][4] = 1.0f;  vertices[5][5] = 0.0f;   vertices[5][6] = 1.0f; vertices[5][7] = 1.0f;
+    vertices[6][0] = 0.5f;      vertices[6][1] = 0.5f;  vertices[6][2] = -0.5f; vertices[6][3] = 1.0f;  vertices[6][4] = 1.0f;  vertices[6][5] = 1.0f;   vertices[6][6] = 1.0f; vertices[6][7] = 1.0f;
+    vertices[7][0] = -0.5f;     vertices[7][1] = 0.5f;  vertices[7][2] = -0.5f; vertices[7][3] = 1.0f;  vertices[7][4] = 1.0f;  vertices[7][5] = 0.5f;   vertices[7][6] = 1.0f; vertices[7][7] = 1.0f;
 
-    // 2. Vertex, Position
-    vertices[8] = 1.0f;
-    vertices[9] = -1.0f;
-    vertices[10] = -5.0f;
-    vertices[11] = 1.0f;
 
-    // 2. Vertex, Color
-    vertices[12] = 0.0f;
-    vertices[13] = 1.0f;
-    vertices[14] = 0.0f;
-    vertices[15] = 1.0f;
+    indices[0] = 4;
+    indices[1] = 0;
+    indices[2] = 3;
+    indices[3] = 7;
 
-    // 3. Vertex, Position
-    vertices[16] = -1.0f;
-    vertices[17] = 1.0f;
-    vertices[18] = -5.0f;
-    vertices[19] = 1.0f;
+    indices[4] = 0;
+    indices[5] = 1;
+    indices[6] = 2;
+    indices[7] = 3;
 
-    // 3. Vertex, Color
-    vertices[20] = 0.0f;
-    vertices[21] = 0.0f;
-    vertices[22] = 1.0f;
-    vertices[23] = 1.0f;
+    indices[8] = 1;
+    indices[9] = 5;
+    indices[10] = 6;
+    indices[11] = 2;
 
-    // 4. Vertex, Position
-    vertices[8] = 1.0f;
-    vertices[9] = 1.0f;
-    vertices[10] = -5.0f;
-    vertices[11] = 1.0f;
+    indices[12] = 5;
+    indices[13] = 4;
+    indices[14] = 7;
+    indices[15] = 6;
 
-    // 4. Vertex, Color
-    vertices[12] = 1.0f;
-    vertices[13] = 1.0f;
-    vertices[14] = -7.0f;
-    vertices[15] = 1.0f;
+    indices[16] = 3;
+    indices[17] = 2;
+    indices[18] = 6;
+    indices[19] = 7;
 
-    indices[0] = 0;
-    indices[1] = 1;
-    indices[2] = 2;
-    indices[3] = 2;
-    indices[4] = 3;
-    indices[5] = 0;
+    indices[20] = 4;
+    indices[21] = 5;
+    indices[22] = 1;
+    indices[23] = 0;
 }
 
 void MyGLWidget::initializeVBO()
@@ -157,13 +149,13 @@ void MyGLWidget::initializeVBO()
     vbo.create();
     vbo.bind();
     vbo.setUsagePattern(QOpenGLBuffer::StaticDraw);
-    vbo.allocate(vertices, sizeof(GLfloat) * 4 * 8);
+    vbo.allocate(&vertices, sizeof(GLfloat) * 8 * 8);
     vbo.release();
 
     ibo.create();
     ibo.bind();
     ibo.setUsagePattern(QOpenGLBuffer::StaticDraw);
-    ibo.allocate(indices, sizeof(GLubyte) * 6);
+    ibo.allocate(&indices, sizeof(GLubyte) * 24);
     ibo.release();
 }
 
@@ -178,7 +170,7 @@ void MyGLWidget::onMessageLogged(QOpenGLDebugMessage message)
     qDebug().noquote() << "Renderable Type: " << QMetaEnum::fromType<QSurfaceFormat::RenderableType>().valueToKey(frmt.renderableType());
     qDebug().noquote() << "Swap Behavior: " << QMetaEnum::fromType<QSurfaceFormat::SwapBehavior>().valueToKey(frmt.swapBehavior());
     qDebug() << "Swap interval: " << frmt.swapInterval();
-    qDebug() << message;
+    qDebug() << "Debug message: " << message;
 }
 
 
