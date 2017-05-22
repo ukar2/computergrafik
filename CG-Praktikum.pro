@@ -32,3 +32,6 @@ HEADERS  += mainwindow.h \
     myglwidget.h
 
 FORMS    += mainwindow.ui
+
+RESOURCES += \
+    shaders.qrc

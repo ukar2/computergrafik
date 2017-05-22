@@ -22,11 +22,14 @@ void MyGLWidget::initializeGL()
 
     f->glEnable(GL_DEPTH_TEST);
     f->glDepthFunc(GL_LEQUAL);
-//glShadeModel(GL_SMOOTH);
+
     f->glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
     f->glClearDepthf(1.0f);
     f->glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
+
+    shaderProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/Shader/default330.vert");
+    shaderProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/Shader/default330.frag");
 
     initializeComponents();
     initializeVertices();
@@ -38,28 +41,39 @@ void MyGLWidget::paintGL()
     QOpenGLExtraFunctions *extf = QOpenGLContext::currentContext()->extraFunctions();
     QOpenGLFunctions *f = QOpenGLContext::currentContext()->functions();
 
-    vbo.bind();
-    ibo.bind();
-
     f->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glMatrixMode(GL_MODELVIEW);         // --- dep
-    glLoadIdentity();                   // --- dep
-    glTranslatef(moveX, moveY, moveZ);  // --- dep
-    glRotatef(rotationAngle, rotationX, rotationY, rotationZ);  // --- dep
+
+    matrix.ortho(-2.0f, 2.0f, -2.0f, 2.0f, 2.0f, -2.0f);
+    matrix.translate(0.0f, 0.0f, -1.0f);
 
     if(flag){
             glRotatef(counter, 0.0f, 1.0f, 0.0f);
         }
 
-    extf->glEnableVertexAttribArray(0);
-    // Parameter: (Numer des Array der mit 'glEnable*(n)' aktiviert wurde, Anzahl Koordinaten eines Vertices, Type der Werte im Array, ..., Offset, Zeiger)
-    extf->glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (GLvoid*)NULL);
+    shaderProgram.bind();
+    vbo.bind();
+    ibo.bind();
 
-    glEnableClientState(GL_COLOR_ARRAY);  // --- dep
-    glColorPointer(4, GL_FLOAT, sizeof(float) * 8, (GLvoid*)NULL + (sizeof(float) * 4));  // --- dep
+    // definiere die Schnittstelle fuer die Eckpunkte
+    int attrVertices = 0;
+    int attrColors = 1;
+    attrVertices = shaderProgram.attributeLocation("vert");
+    attrColors = shaderProgram.attributeLocation("color");
 
-    extf->glDrawElements(GL_QUADS, 24, GL_UNSIGNED_BYTE, (GLvoid*)NULL); // (Primitive-Type, Anzahl der zu rendernden Elemente, Typ der Werte in indicies, Zeiger)
-    extf->glFlush();
+    shaderProgram.enableAttributeArray(attrVertices);
+    shaderProgram.enableAttributeArray(attrColors);
+
+    int uniformMatrix = 0;
+    uniformMatrix = shaderProgram.uniformLocation("matrix");
+    shaderProgram.setUniformValue(uniformMatrix, matrix);
+
+    shaderProgram.setAttributeBuffer(attrVertices, GL_FLOAT, 0, 4, sizeof(GLfloat) * 8);
+    shaderProgram.setAttributeBuffer(attrColors, GL_FLOAT, sizeof(GLfloat) * 4, 4, sizeof(GLfloat) * 8);
+
+    f->glDrawElements(GL_QUADS, 24, GL_FLOAT, (GLvoid*)NULL);
+
+    shaderProgram.disableAttributeArray(attrVertices);
+    shaderProgram.disableAttributeArray(attrColors);
 
     vbo.release();
     ibo.release();

@@ -6,10 +6,12 @@
 #include <QOpenGLContext>
 #include <QOpenGLFunctions>
 #include <QOpenGLExtraFunctions>
+#include <QOpenGLShaderProgram>
 
 #include <QWidget>
 #include <QKeyEvent>
 #include <QWheelEvent>
+#include <QMatrix4x4>
 
 #include <QDebug>
 #include <QOpenGLDebugMessage>
@@ -59,11 +61,10 @@ private:
 
     GLfloat vertices[8][8];
     GLubyte indices[24];
-    //GLuint vboHandle;
-    //GLuint indicesHandle;
 
     QOpenGLBuffer vbo, ibo;
-    //QOpenGLContext *m_context;
+    QOpenGLShaderProgram shaderProgram;
+    QMatrix4x4 matrix;
 
     void initializeComponents();
     void initializeVertices();
