@@ -43,11 +43,13 @@ void MyGLWidget::paintGL()
 
     f->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    matrix.ortho(-2.0f, 2.0f, -2.0f, 2.0f, 2.0f, -2.0f);
-    matrix.translate(0.0f, 0.0f, -1.0f);
+    matrix.setToIdentity();
+    matrix.ortho(-1.0f, 1.0f, -1.0f, 1.0f, 1.0f, -1.0f);
+    matrix.translate(moveX, moveY, moveZ);
+    matrix.rotate(rotationAngle, rotationX, rotationY, rotationZ);
 
     if(flag){
-            glRotatef(counter, 0.0f, 1.0f, 0.0f);
+            // glRotatef(counter, 0.0f, 1.0f, 0.0f);
         }
 
     shaderProgram.bind();
@@ -70,7 +72,7 @@ void MyGLWidget::paintGL()
     shaderProgram.setAttributeBuffer(attrVertices, GL_FLOAT, 0, 4, sizeof(GLfloat) * 8);
     shaderProgram.setAttributeBuffer(attrColors, GL_FLOAT, sizeof(GLfloat) * 4, 4, sizeof(GLfloat) * 8);
 
-    f->glDrawElements(GL_QUADS, 24, GL_FLOAT, (GLvoid*)NULL);
+    f->glDrawElements(GL_QUADS, 24, GL_UNSIGNED_BYTE, (GLvoid*)NULL);
 
     shaderProgram.disableAttributeArray(attrVertices);
     shaderProgram.disableAttributeArray(attrColors);
@@ -79,8 +81,8 @@ void MyGLWidget::paintGL()
     ibo.release();
 
     if(flag){
-            this->update();
-            counter++;
+            //this->update();
+            //counter++;
         }
 
 }
@@ -91,9 +93,9 @@ void MyGLWidget::resizeGL(int w, int h)
     x = (400 + 1)*(w / 2) + 0;
     y = (400 + 1)*(h / 2) + 0;
     glViewport(x, y, w, h);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glFrustum(-0.05, 0.05, -0.05, 0.05, 0.1, 100.0);
+    //glMatrixMode(GL_PROJECTION);
+    matrix.setToIdentity();
+    matrix.frustum(-0.05, 0.05, -0.05, 0.05, 0.1, 100.0);
 }
 
 
@@ -106,7 +108,7 @@ void MyGLWidget::initializeComponents()
     wheel = 0;
     moveX = 0.0f;
     moveY = 0.0f;
-    moveZ = -7.0f;
+    moveZ = -1.0f;
     rotationAngle = 0.0f;
     rotationX = 0.0f;
     rotationY = 0.0f;
@@ -116,15 +118,15 @@ void MyGLWidget::initializeComponents()
 
 void MyGLWidget::initializeVertices()
 {
-    vertices[0][0] = -0.5f;     vertices[0][1] = -0.5f; vertices[0][2] = 0.5f;  vertices[0][3] = 1.0f;  vertices[0][4] = 1.0f;  vertices[0][5] = 0.0f;   vertices[0][6] = 0.0f; vertices[0][7] = 1.0f;
-    vertices[1][0] = 0.5f;      vertices[1][1] = -0.5f; vertices[1][2] = 0.5f;  vertices[1][3] = 1.0f;  vertices[1][4] = 0.0f;  vertices[1][5] = 1.0f;   vertices[1][6] = 0.0f; vertices[1][7] = 1.0f;
-    vertices[2][0] = 0.5f;      vertices[2][1] = 0.5f;  vertices[2][2] = 0.5f;  vertices[2][3] = 1.0f;  vertices[2][4] = 0.0f;  vertices[2][5] = 0.0f;   vertices[2][6] = 1.0f; vertices[2][7] = 1.0f;
-    vertices[3][0] = -0.5f;     vertices[3][1] = 0.5f;  vertices[3][2] = 0.5f;  vertices[3][3] = 1.0f;  vertices[3][4] = 0.0f;  vertices[3][5] = 1.0f;   vertices[3][6] = 1.0f; vertices[3][7] = 1.0f;
+    vertices[0][0] = -1.0f;     vertices[0][1] = -1.0f; vertices[0][2] = 0.0f;  vertices[0][3] = 1.0f;  vertices[0][4] = 1.0f;  vertices[0][5] = 0.0f;   vertices[0][6] = 0.0f; vertices[0][7] = 1.0f;
+    vertices[1][0] = 1.0f;      vertices[1][1] = -1.0f; vertices[1][2] = 0.0f;  vertices[1][3] = 1.0f;  vertices[1][4] = 0.0f;  vertices[1][5] = 1.0f;   vertices[1][6] = 0.0f; vertices[1][7] = 1.0f;
+    vertices[2][0] = 1.0f;      vertices[2][1] = 1.0f;  vertices[2][2] = 0.0f;  vertices[2][3] = 1.0f;  vertices[2][4] = 0.0f;  vertices[2][5] = 0.0f;   vertices[2][6] = 1.0f; vertices[2][7] = 1.0f;
+    vertices[3][0] = -1.0f;     vertices[3][1] = 1.0f;  vertices[3][2] = 0.0f;  vertices[3][3] = 1.0f;  vertices[3][4] = 0.0f;  vertices[3][5] = 1.0f;   vertices[3][6] = 1.0f; vertices[3][7] = 1.0f;
 
-    vertices[4][0] = -0.5f;     vertices[4][1] = -0.5f; vertices[4][2] = -0.5f; vertices[4][3] = 1.0f;  vertices[4][4] = 1.0f;  vertices[4][5] = 1.0f;   vertices[4][6] = 0.0f; vertices[4][7] = 1.0f;
-    vertices[5][0] = 0.5f;      vertices[5][1] = -0.5f; vertices[5][2] = -0.5f; vertices[5][3] = 1.0f;  vertices[5][4] = 1.0f;  vertices[5][5] = 0.0f;   vertices[5][6] = 1.0f; vertices[5][7] = 1.0f;
-    vertices[6][0] = 0.5f;      vertices[6][1] = 0.5f;  vertices[6][2] = -0.5f; vertices[6][3] = 1.0f;  vertices[6][4] = 1.0f;  vertices[6][5] = 1.0f;   vertices[6][6] = 1.0f; vertices[6][7] = 1.0f;
-    vertices[7][0] = -0.5f;     vertices[7][1] = 0.5f;  vertices[7][2] = -0.5f; vertices[7][3] = 1.0f;  vertices[7][4] = 1.0f;  vertices[7][5] = 0.5f;   vertices[7][6] = 1.0f; vertices[7][7] = 1.0f;
+    vertices[4][0] = -1.0f;     vertices[4][1] = -1.0f; vertices[4][2] = -1.0f; vertices[4][3] = 1.0f;  vertices[4][4] = 1.0f;  vertices[4][5] = 1.0f;   vertices[4][6] = 0.0f; vertices[4][7] = 1.0f;
+    vertices[5][0] = 1.0f;      vertices[5][1] = -1.0f; vertices[5][2] = -1.0f; vertices[5][3] = 1.0f;  vertices[5][4] = 1.0f;  vertices[5][5] = 0.0f;   vertices[5][6] = 1.0f; vertices[5][7] = 1.0f;
+    vertices[6][0] = 1.0f;      vertices[6][1] = 1.0f;  vertices[6][2] = -1.0f; vertices[6][3] = 1.0f;  vertices[6][4] = 1.0f;  vertices[6][5] = 1.0f;   vertices[6][6] = 1.0f; vertices[6][7] = 1.0f;
+    vertices[7][0] = -1.0f;     vertices[7][1] = 1.0f;  vertices[7][2] = -1.0f; vertices[7][3] = 1.0f;  vertices[7][4] = 1.0f;  vertices[7][5] = 0.5f;   vertices[7][6] = 1.0f; vertices[7][7] = 1.0f;
 
 
     indices[0] = 4;
@@ -266,6 +268,7 @@ void MyGLWidget::receiveRotationX(int angle)
     rotationX = 1.0f;
     rotationY = 0.0f;
     rotationZ = 0.0f;
+    //this->update();
     this->update();
 }
 
