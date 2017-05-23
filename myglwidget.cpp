@@ -14,14 +14,6 @@ void MyGLWidget::initializeGL()
 
     f->glEnable(GL_DEBUG_OUTPUT);
 
-    QOpenGLDebugLogger *debugLogger = new QOpenGLDebugLogger(this);
-    connect(debugLogger, SIGNAL(messageLogged(QOpenGLDebugMessage)), this, SLOT(onMessageLogged(QOpenGLDebugMessage)), Qt::DirectConnection);
-
-    if(debugLogger->initialize()){
-        debugLogger->startLogging(QOpenGLDebugLogger::SynchronousLogging);
-        debugLogger->enableMessages();
-    }
-
     f->glEnable(GL_DEPTH_TEST);
     f->glDepthFunc(GL_LEQUAL);
 
@@ -34,17 +26,16 @@ void MyGLWidget::initializeGL()
     shaderProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/Shader/default330.frag");
     shaderProgram.link();
 
-    initializeVBO();
+    initializeVBO();  // Vertex- und Indexdata (Array) ins Buffer laden
 }
 
 void MyGLWidget::paintGL()
 {
-    //QOpenGLExtraFunctions *extf = QOpenGLContext::currentContext()->extraFunctions();
     QOpenGLFunctions *f = QOpenGLContext::currentContext()->functions();
 
     f->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // Die Model-Matrix speichert wie das 3d objekt aus den buffern translatiert/rotiert werden soll(ohne Einfluss auf die Welt).
+    // Die Model-Matrix speichert wie das 3d Objekt aus den Buffern translatiert/rotiert werden soll(ohne Einfluss auf die Welt).
     modelMatrix.setToIdentity();
     modelMatrix.translate(moveX, moveY, moveZ);
     modelMatrix.rotate(rotationAngleX, 1.0f, 0.0f, 0.0f);
@@ -57,11 +48,6 @@ void MyGLWidget::paintGL()
     //viewMatrix.rotate(0.0f, 1.0f, 0.0f, 0.0f);
     //viewMatrix.rotate(0.0f, 0.0f, 1.0f, 0.0f);
     //viewMatrix.rotate(0.0f, 0.0f, 0.0f, 1.0f);
-
-
-    if(flag){
-            // glRotatef(counter, 0.0f, 1.0f, 0.0f);
-        }
 
     shaderProgram.bind();
     vbo.bind();
@@ -117,7 +103,7 @@ void MyGLWidget::resizeGL(int w, int h)
 
     // Projektion-Matrix macht aus der 3d Welt ein 2d Bild.
     projektionMatrix.setToIdentity();
-    projektionMatrix.frustum(-0.05f, 0.05f, -0.05f, 0.05f, 0.1f, 100.0f);
+    projektionMatrix.frustum(-0.05f, 0.05f, -0.05f, 0.05f, 0.1f, 1000.0f);
     glViewport(x, y, w, h);
 }
 
@@ -197,6 +183,18 @@ void MyGLWidget::initializeVBO()
     ibo.release();
 }
 
+
+
+void MyGLWidget::initializeDebugLogger()
+{
+    QOpenGLDebugLogger *debugLogger = new QOpenGLDebugLogger(this);
+    connect(debugLogger, SIGNAL(messageLogged(QOpenGLDebugMessage)), this, SLOT(onMessageLogged(QOpenGLDebugMessage)), Qt::DirectConnection);
+
+    if(debugLogger->initialize()){
+        debugLogger->startLogging(QOpenGLDebugLogger::SynchronousLogging);
+        debugLogger->enableMessages();
+    }
+}
 
 
 void MyGLWidget::onMessageLogged(QOpenGLDebugMessage message)

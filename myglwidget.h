@@ -46,20 +46,22 @@ signals:
     void wheelValueForZChanged(int value);
 
 private:
+    bool flag;
+    unsigned int vboLength;
+    unsigned int iboLength;
     GLint y;
     GLint x;
     GLint wheel;
-    bool flag;
     GLfloat counter;
     GLfloat moveX;
     GLfloat moveY;
     GLfloat moveZ;
-    //GLfloat rotationX;
-    //GLfloat rotationY;
-    //GLfloat rotationZ;
     GLfloat rotationAngleX;
     GLfloat rotationAngleY;
     GLfloat rotationAngleZ;
+
+    GLfloat *vboData;
+    GLuint *indexData;
 
     GLfloat vertices[8][8];
     GLubyte indices[24];
@@ -69,12 +71,13 @@ private:
 
     // p*v*m Reihenfolge ist wichtig!!!
     QMatrix4x4 projektionMatrix;
-    QMatrix4x4 viewMatrix;
-    QMatrix4x4 modelMatrix;
+    QMatrix4x4 viewMatrix;              // --- die Welt (Kamera)
+    QMatrix4x4 modelMatrix;             // --- Das 3D Objekt
 
     void initializeComponents();
     void initializeVertices();
     void initializeVBO();
+    void initializeDebugLogger();
 };
 
 #endif // MYGLWIDGET_H
