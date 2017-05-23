@@ -13,6 +13,7 @@
 #include <QKeyEvent>
 #include <QWheelEvent>
 #include <QMatrix4x4>
+#include <QImage>
 
 #include <QDebug>
 #include <QOpenGLDebugMessage>
@@ -20,6 +21,8 @@
 #include <QSurface>
 #include <QMetaEnum>
 
+#include <stack>
+#include <string>
 #include "modelloader.h"
 
 
@@ -76,8 +79,16 @@ private:
     QMatrix4x4 modelMatrix;             // --- Das 3D Objekt
 
     void initializeComponents();
-    void initializeVBO();
+    void initializeVBO(std::string object);
+    void addTextureMap(std::string path = "");
+    void draw(Planet &planet);
     void initializeDebugLogger();
+
+
+    Planet sun;
+    Planet mercury;
+    Planet venus;
+    Planet earth;
 };
 
 #endif // MYGLWIDGET_H

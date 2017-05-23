@@ -1,5 +1,8 @@
 <RCC>
     <qresource prefix="/">
         <file>map/earthmap1k.jpg</file>
+        <file>map/mercurybump.jpg</file>
+        <file>map/venusmap.jpg</file>
+        <file>map/sunmap.jpg</file>
     </qresource>
 </RCC>
