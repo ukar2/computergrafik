@@ -4,6 +4,8 @@ MyGLWidget::MyGLWidget(QWidget *parent) :
     QOpenGLWidget(parent), vbo(QOpenGLBuffer::VertexBuffer), ibo(QOpenGLBuffer::IndexBuffer)
 {
    setFocusPolicy(Qt::StrongFocus);
+   initializeComponents();
+   initializeVertices();
 }
 
 void MyGLWidget::initializeGL()
@@ -30,23 +32,32 @@ void MyGLWidget::initializeGL()
 
     shaderProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/Shader/default330.vert");
     shaderProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/Shader/default330.frag");
+    shaderProgram.link();
 
-    initializeComponents();
-    initializeVertices();
     initializeVBO();
 }
 
 void MyGLWidget::paintGL()
 {
-    QOpenGLExtraFunctions *extf = QOpenGLContext::currentContext()->extraFunctions();
+    //QOpenGLExtraFunctions *extf = QOpenGLContext::currentContext()->extraFunctions();
     QOpenGLFunctions *f = QOpenGLContext::currentContext()->functions();
 
     f->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    matrix.setToIdentity();
-    matrix.ortho(-1.0f, 1.0f, -1.0f, 1.0f, 1.0f, -1.0f);
-    matrix.translate(moveX, moveY, moveZ);
-    matrix.rotate(rotationAngle, rotationX, rotationY, rotationZ);
+    // Die Model-Matrix speichert wie das 3d objekt aus den buffern translatiert/rotiert werden soll(ohne Einfluss auf die Welt).
+    modelMatrix.setToIdentity();
+    modelMatrix.translate(moveX, moveY, moveZ);
+    modelMatrix.rotate(rotationAngleX, 1.0f, 0.0f, 0.0f);
+    modelMatrix.rotate(rotationAngleY, 0.0f, 1.0f, 0.0f);
+    modelMatrix.rotate(rotationAngleZ, 0.0f, 0.0f, 1.0f);
+
+    // Die View-Matrix speichert wie die Welt translatiert/rotiert werden soll (hat Einfluss auf alle Objekte in der Welt).
+    viewMatrix.setToIdentity();
+    //viewMatrix.translate(0.0f, 0.0f, -15.0f);
+    //viewMatrix.rotate(0.0f, 1.0f, 0.0f, 0.0f);
+    //viewMatrix.rotate(0.0f, 0.0f, 1.0f, 0.0f);
+    //viewMatrix.rotate(0.0f, 0.0f, 0.0f, 1.0f);
+
 
     if(flag){
             // glRotatef(counter, 0.0f, 1.0f, 0.0f);
@@ -65,9 +76,18 @@ void MyGLWidget::paintGL()
     shaderProgram.enableAttributeArray(attrVertices);
     shaderProgram.enableAttributeArray(attrColors);
 
-    int uniformMatrix = 0;
-    uniformMatrix = shaderProgram.uniformLocation("matrix");
-    shaderProgram.setUniformValue(uniformMatrix, matrix);
+    int pMatrix = 0;
+    pMatrix = shaderProgram.uniformLocation("projektionMatrix");
+    shaderProgram.setUniformValue(pMatrix, projektionMatrix);
+
+    int vMatrix = 1;
+    vMatrix = shaderProgram.uniformLocation("viewMatrix");
+    shaderProgram.setUniformValue(vMatrix, viewMatrix);
+
+    int mMatrix = 2;
+    mMatrix = shaderProgram.uniformLocation("modelMatrix");
+    shaderProgram.setUniformValue(mMatrix, modelMatrix);
+
 
     shaderProgram.setAttributeBuffer(attrVertices, GL_FLOAT, 0, 4, sizeof(GLfloat) * 8);
     shaderProgram.setAttributeBuffer(attrColors, GL_FLOAT, sizeof(GLfloat) * 4, 4, sizeof(GLfloat) * 8);
@@ -79,6 +99,8 @@ void MyGLWidget::paintGL()
 
     vbo.release();
     ibo.release();
+
+    shaderProgram.release();
 
     if(flag){
             //this->update();
@@ -92,10 +114,11 @@ void MyGLWidget::resizeGL(int w, int h)
 {
     x = (400 + 1)*(w / 2) + 0;
     y = (400 + 1)*(h / 2) + 0;
+
+    // Projektion-Matrix macht aus der 3d Welt ein 2d Bild.
+    projektionMatrix.setToIdentity();
+    projektionMatrix.frustum(-0.05f, 0.05f, -0.05f, 0.05f, 0.1f, 100.0f);
     glViewport(x, y, w, h);
-    //glMatrixMode(GL_PROJECTION);
-    matrix.setToIdentity();
-    matrix.frustum(-0.05, 0.05, -0.05, 0.05, 0.1, 100.0);
 }
 
 
@@ -108,20 +131,19 @@ void MyGLWidget::initializeComponents()
     wheel = 0;
     moveX = 0.0f;
     moveY = 0.0f;
-    moveZ = -1.0f;
-    rotationAngle = 0.0f;
-    rotationX = 0.0f;
-    rotationY = 0.0f;
-    rotationZ = 0.0f;
+    moveZ = -5.0f;
+    rotationAngleX = 0.0f;
+    rotationAngleY = 0.0f;
+    rotationAngleZ = 0.0f;
 }
 
 
 void MyGLWidget::initializeVertices()
 {
-    vertices[0][0] = -1.0f;     vertices[0][1] = -1.0f; vertices[0][2] = 0.0f;  vertices[0][3] = 1.0f;  vertices[0][4] = 1.0f;  vertices[0][5] = 0.0f;   vertices[0][6] = 0.0f; vertices[0][7] = 1.0f;
-    vertices[1][0] = 1.0f;      vertices[1][1] = -1.0f; vertices[1][2] = 0.0f;  vertices[1][3] = 1.0f;  vertices[1][4] = 0.0f;  vertices[1][5] = 1.0f;   vertices[1][6] = 0.0f; vertices[1][7] = 1.0f;
-    vertices[2][0] = 1.0f;      vertices[2][1] = 1.0f;  vertices[2][2] = 0.0f;  vertices[2][3] = 1.0f;  vertices[2][4] = 0.0f;  vertices[2][5] = 0.0f;   vertices[2][6] = 1.0f; vertices[2][7] = 1.0f;
-    vertices[3][0] = -1.0f;     vertices[3][1] = 1.0f;  vertices[3][2] = 0.0f;  vertices[3][3] = 1.0f;  vertices[3][4] = 0.0f;  vertices[3][5] = 1.0f;   vertices[3][6] = 1.0f; vertices[3][7] = 1.0f;
+    vertices[0][0] = -1.0f;     vertices[0][1] = -1.0f; vertices[0][2] = 1.0f;  vertices[0][3] = 1.0f;  vertices[0][4] = 1.0f;  vertices[0][5] = 0.0f;   vertices[0][6] = 0.0f; vertices[0][7] = 1.0f;
+    vertices[1][0] = 1.0f;      vertices[1][1] = -1.0f; vertices[1][2] = 1.0f;  vertices[1][3] = 1.0f;  vertices[1][4] = 0.0f;  vertices[1][5] = 1.0f;   vertices[1][6] = 0.0f; vertices[1][7] = 1.0f;
+    vertices[2][0] = 1.0f;      vertices[2][1] = 1.0f;  vertices[2][2] = 1.0f;  vertices[2][3] = 1.0f;  vertices[2][4] = 0.0f;  vertices[2][5] = 0.0f;   vertices[2][6] = 1.0f; vertices[2][7] = 1.0f;
+    vertices[3][0] = -1.0f;     vertices[3][1] = 1.0f;  vertices[3][2] = 1.0f;  vertices[3][3] = 1.0f;  vertices[3][4] = 0.0f;  vertices[3][5] = 1.0f;   vertices[3][6] = 1.0f; vertices[3][7] = 1.0f;
 
     vertices[4][0] = -1.0f;     vertices[4][1] = -1.0f; vertices[4][2] = -1.0f; vertices[4][3] = 1.0f;  vertices[4][4] = 1.0f;  vertices[4][5] = 1.0f;   vertices[4][6] = 0.0f; vertices[4][7] = 1.0f;
     vertices[5][0] = 1.0f;      vertices[5][1] = -1.0f; vertices[5][2] = -1.0f; vertices[5][3] = 1.0f;  vertices[5][4] = 1.0f;  vertices[5][5] = 0.0f;   vertices[5][6] = 1.0f; vertices[5][7] = 1.0f;
@@ -193,6 +215,7 @@ void MyGLWidget::onMessageLogged(QOpenGLDebugMessage message)
 
 void MyGLWidget::keyPressEvent(QKeyEvent *event)
 {
+    qDebug() << event->nativeVirtualKey();
     switch(event->nativeVirtualKey())
     {
     case 87:
@@ -232,8 +255,8 @@ void MyGLWidget::wheelEvent(QWheelEvent *event)
 {
     int deltaValue = event->delta();
 
-    if(wheel >= -5 && wheel <= 5)
-    {
+    //if(wheel >= -5 && wheel <= 5)
+    //{
         if(deltaValue < 0){
             moveZ++;
             wheel++;
@@ -245,18 +268,18 @@ void MyGLWidget::wheelEvent(QWheelEvent *event)
 
         }
 
-        if(wheel == -6){
-            moveZ++;
-            wheel++;
-        }
-        if(wheel == 6){
-            moveZ--;
-            wheel--;
-        }
+        //if(wheel == -6){
+            //moveZ++;
+            //wheel++;
+        //}
+        //if(wheel == 6){
+          //  moveZ--;
+            //wheel--;
+        //}
 
         emit wheelValueForZChanged(wheel);
         this->update(); // Widges wird upgedated
-    }
+    //}
 
     event->accept();
 }
@@ -264,29 +287,19 @@ void MyGLWidget::wheelEvent(QWheelEvent *event)
 
 void MyGLWidget::receiveRotationX(int angle)
 {
-    rotationAngle = angle;
-    rotationX = 1.0f;
-    rotationY = 0.0f;
-    rotationZ = 0.0f;
-    //this->update();
+    rotationAngleX = angle;
     this->update();
 }
 
 void MyGLWidget::receiveRotationY(int angle)
 {
-    rotationAngle = angle;
-    rotationX = 0.0f;
-    rotationY = 1.0f;
-    rotationZ = 0.0f;
+    rotationAngleY = angle;
     this->update();
 }
 
 void MyGLWidget::receiveRotationZ(int angle)
 {
-    rotationAngle = angle;
-    rotationX = 0.0f;
-    rotationY = 0.0f;
-    rotationZ = 1.0f;
+    rotationAngleZ = angle;
     this->update();
 }
 

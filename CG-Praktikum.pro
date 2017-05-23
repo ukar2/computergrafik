@@ -5,7 +5,10 @@
 #-------------------------------------------------
 
 QT       += core gui opengl
-LIBS     += -lopengl32
+LIBS     += -lopengl32 -LC:/Users/rempel/qtworkspace/CG-Praktikum/assimp-win-mingw32/code/ -lassimp
+
+INCLUDEPATH  += C:/Users/rempel/qtworkspace/CG-Praktikum/assimp-win-mingw32/include
+DEPENDPATH   += C:/Users/rempel/qtworkspace/CG-Praktikum/assimp-win-mingw32/include
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -26,10 +29,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    myglwidget.cpp
+    myglwidget.cpp \
+    modelloader.cpp
 
 HEADERS  += mainwindow.h \
-    myglwidget.h
+    myglwidget.h \
+    modelloader.h
 
 FORMS    += mainwindow.ui
 

@@ -54,17 +54,23 @@ private:
     GLfloat moveX;
     GLfloat moveY;
     GLfloat moveZ;
-    GLfloat rotationX;
-    GLfloat rotationY;
-    GLfloat rotationZ;
-    GLfloat rotationAngle;
+    //GLfloat rotationX;
+    //GLfloat rotationY;
+    //GLfloat rotationZ;
+    GLfloat rotationAngleX;
+    GLfloat rotationAngleY;
+    GLfloat rotationAngleZ;
 
     GLfloat vertices[8][8];
     GLubyte indices[24];
 
     QOpenGLBuffer vbo, ibo;
     QOpenGLShaderProgram shaderProgram;
-    QMatrix4x4 matrix;
+
+    // p*v*m Reihenfolge ist wichtig!!!
+    QMatrix4x4 projektionMatrix;
+    QMatrix4x4 viewMatrix;
+    QMatrix4x4 modelMatrix;
 
     void initializeComponents();
     void initializeVertices();

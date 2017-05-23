@@ -1,5 +1,5 @@
-#version 330
-#extension GL_ARB_separate_shader_objects : enable
+#version 450
+//#extension GL_ARB_separate_shader_objects : enable
 // default330.frag: a simple fragment shader
 //
 // notes:
