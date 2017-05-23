@@ -5,7 +5,6 @@ MyGLWidget::MyGLWidget(QWidget *parent) :
 {
    setFocusPolicy(Qt::StrongFocus);
    initializeComponents();
-   initializeVertices();
 }
 
 void MyGLWidget::initializeGL()
@@ -13,7 +12,7 @@ void MyGLWidget::initializeGL()
     QOpenGLFunctions *f = QOpenGLContext::currentContext()->functions();
 
     f->glEnable(GL_DEBUG_OUTPUT);
-
+    f->glEnable(GL_TEXTURE_2D);
     f->glEnable(GL_DEPTH_TEST);
     f->glDepthFunc(GL_LEQUAL);
 
@@ -22,9 +21,14 @@ void MyGLWidget::initializeGL()
     f->glClearDepthf(1.0f);
     f->glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
 
+
+    // --- Shader: Vertex, Fragment ---
+
     shaderProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/Shader/default330.vert");
     shaderProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/Shader/default330.frag");
     shaderProgram.link();
+
+    // --- end.
 
     initializeVBO();  // Vertex- und Indexdata (Array) ins Buffer laden
 }
@@ -78,7 +82,7 @@ void MyGLWidget::paintGL()
     shaderProgram.setAttributeBuffer(attrVertices, GL_FLOAT, 0, 4, sizeof(GLfloat) * 8);
     shaderProgram.setAttributeBuffer(attrColors, GL_FLOAT, sizeof(GLfloat) * 4, 4, sizeof(GLfloat) * 8);
 
-    f->glDrawElements(GL_QUADS, 24, GL_UNSIGNED_BYTE, (GLvoid*)NULL);
+    f->glDrawElements(GL_QUADS, iboLength, GL_UNSIGNED_INT, (GLvoid*)NULL);
 
     shaderProgram.disableAttributeArray(attrVertices);
     shaderProgram.disableAttributeArray(attrColors);
@@ -124,63 +128,41 @@ void MyGLWidget::initializeComponents()
 }
 
 
-void MyGLWidget::initializeVertices()
-{
-    vertices[0][0] = -1.0f;     vertices[0][1] = -1.0f; vertices[0][2] = 1.0f;  vertices[0][3] = 1.0f;  vertices[0][4] = 1.0f;  vertices[0][5] = 0.0f;   vertices[0][6] = 0.0f; vertices[0][7] = 1.0f;
-    vertices[1][0] = 1.0f;      vertices[1][1] = -1.0f; vertices[1][2] = 1.0f;  vertices[1][3] = 1.0f;  vertices[1][4] = 0.0f;  vertices[1][5] = 1.0f;   vertices[1][6] = 0.0f; vertices[1][7] = 1.0f;
-    vertices[2][0] = 1.0f;      vertices[2][1] = 1.0f;  vertices[2][2] = 1.0f;  vertices[2][3] = 1.0f;  vertices[2][4] = 0.0f;  vertices[2][5] = 0.0f;   vertices[2][6] = 1.0f; vertices[2][7] = 1.0f;
-    vertices[3][0] = -1.0f;     vertices[3][1] = 1.0f;  vertices[3][2] = 1.0f;  vertices[3][3] = 1.0f;  vertices[3][4] = 0.0f;  vertices[3][5] = 1.0f;   vertices[3][6] = 1.0f; vertices[3][7] = 1.0f;
-
-    vertices[4][0] = -1.0f;     vertices[4][1] = -1.0f; vertices[4][2] = -1.0f; vertices[4][3] = 1.0f;  vertices[4][4] = 1.0f;  vertices[4][5] = 1.0f;   vertices[4][6] = 0.0f; vertices[4][7] = 1.0f;
-    vertices[5][0] = 1.0f;      vertices[5][1] = -1.0f; vertices[5][2] = -1.0f; vertices[5][3] = 1.0f;  vertices[5][4] = 1.0f;  vertices[5][5] = 0.0f;   vertices[5][6] = 1.0f; vertices[5][7] = 1.0f;
-    vertices[6][0] = 1.0f;      vertices[6][1] = 1.0f;  vertices[6][2] = -1.0f; vertices[6][3] = 1.0f;  vertices[6][4] = 1.0f;  vertices[6][5] = 1.0f;   vertices[6][6] = 1.0f; vertices[6][7] = 1.0f;
-    vertices[7][0] = -1.0f;     vertices[7][1] = 1.0f;  vertices[7][2] = -1.0f; vertices[7][3] = 1.0f;  vertices[7][4] = 1.0f;  vertices[7][5] = 0.5f;   vertices[7][6] = 1.0f; vertices[7][7] = 1.0f;
-
-
-    indices[0] = 4;
-    indices[1] = 0;
-    indices[2] = 3;
-    indices[3] = 7;
-
-    indices[4] = 0;
-    indices[5] = 1;
-    indices[6] = 2;
-    indices[7] = 3;
-
-    indices[8] = 1;
-    indices[9] = 5;
-    indices[10] = 6;
-    indices[11] = 2;
-
-    indices[12] = 5;
-    indices[13] = 4;
-    indices[14] = 7;
-    indices[15] = 6;
-
-    indices[16] = 3;
-    indices[17] = 2;
-    indices[18] = 6;
-    indices[19] = 7;
-
-    indices[20] = 4;
-    indices[21] = 5;
-    indices[22] = 1;
-    indices[23] = 0;
-}
-
 void MyGLWidget::initializeVBO()
 {
+    // --- Model ---
+
+
+    ModelLoader model;
+    bool res = model.loadObjectFromFile("C:/Users/rempel/qtworkspace/CG-Praktikum/Model/sphere_high.obj");
+
+    if(res)
+    {
+        vboLength = model.lengthOfSimpleVBO(0);
+        iboLength = model.lengthOfIndexArray();
+
+        vboData = new GLfloat[vboLength];
+        indexData = new GLuint[iboLength];
+        model.genSimpleVBO(vboData);
+        model.genIndexArray(indexData);
+    }else{
+        qDebug() << "Model error ";
+    }
+    // --- end.
+
+
     vbo.create();
     vbo.bind();
     vbo.setUsagePattern(QOpenGLBuffer::StaticDraw);
-    vbo.allocate(&vertices, sizeof(GLfloat) * 8 * 8);
+    vbo.allocate(vboData, sizeof(GLfloat) * vboLength);
     vbo.release();
 
     ibo.create();
     ibo.bind();
     ibo.setUsagePattern(QOpenGLBuffer::StaticDraw);
-    ibo.allocate(&indices, sizeof(GLubyte) * 24);
+    ibo.allocate(indexData, sizeof(GLubyte) * iboLength);
     ibo.release();
+
 }
 
 

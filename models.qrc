@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Model/bunny.obj</file>
+        <file>Model/bunny_low.obj</file>
+        <file>Model/sphere_high.obj</file>
+        <file>Model/sphere_low.obj</file>
+    </qresource>
+</RCC>

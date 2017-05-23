@@ -7,6 +7,7 @@
 #include <QOpenGLFunctions>
 #include <QOpenGLExtraFunctions>
 #include <QOpenGLShaderProgram>
+#include <QOpenGLTexture>
 
 #include <QWidget>
 #include <QKeyEvent>
@@ -18,6 +19,8 @@
 #include <QOpenGLDebugLogger>
 #include <QSurface>
 #include <QMetaEnum>
+
+#include "modelloader.h"
 
 
 class MyGLWidget : public QOpenGLWidget
@@ -63,11 +66,9 @@ private:
     GLfloat *vboData;
     GLuint *indexData;
 
-    GLfloat vertices[8][8];
-    GLubyte indices[24];
-
     QOpenGLBuffer vbo, ibo;
     QOpenGLShaderProgram shaderProgram;
+    QOpenGLTexture *qTex;
 
     // p*v*m Reihenfolge ist wichtig!!!
     QMatrix4x4 projektionMatrix;
@@ -75,7 +76,6 @@ private:
     QMatrix4x4 modelMatrix;             // --- Das 3D Objekt
 
     void initializeComponents();
-    void initializeVertices();
     void initializeVBO();
     void initializeDebugLogger();
 };
