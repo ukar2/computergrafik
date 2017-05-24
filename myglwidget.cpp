@@ -19,7 +19,7 @@ void MyGLWidget::initializeGL()
     f->glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
     f->glClearDepthf(1.0f);
-    f->glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
+    f->glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 
     initializeVBO("sphere_high.obj");           // Vertex- und Indexdata (Array) ins Buffer laden
@@ -43,6 +43,10 @@ void MyGLWidget::initializeGL()
     addTextureMap(":/map/earthmap1k.jpg");
     earth.set_qTex(qTex);
     earth.set_iboLength(iboLength);
+
+    addTextureMap(":/map/moonmap1k.jpg");
+    moon.set_qTex(qTex);
+    moon.set_iboLength(iboLength);
 
 
     shaderProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/Shader/default330.vert");
@@ -108,7 +112,11 @@ void MyGLWidget::paintGL()
 
     draw(earth);
 
+    modelMatrix.rotate(counter * 0.9, 0.0, 1.0, 0.0);
+    modelMatrix.translate(-2.0f, 0.0f, 0.0f);
+    modelMatrix.scale(0.3);
 
+    draw(moon);
 
     if(flag){
             this->update();
@@ -375,8 +383,10 @@ void MyGLWidget::setChkBoxFlag(bool value)
 
 MyGLWidget::~MyGLWidget()
 {
-    glDisableClientState(GL_VERTEX_ARRAY);
-    glDisableClientState(GL_COLOR_ARRAY);
     vbo.release();
     ibo.release();
+    qTex->release();
+    shaderProgram.release();
+    glDisableClientState(GL_VERTEX_ARRAY);
+    glDisableClientState(GL_COLOR_ARRAY);
 }

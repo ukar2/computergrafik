@@ -4,5 +4,6 @@
         <file>map/mercurybump.jpg</file>
         <file>map/venusmap.jpg</file>
         <file>map/sunmap.jpg</file>
+        <file>map/moonmap1k.jpg</file>
     </qresource>
 </RCC>

@@ -74,6 +74,7 @@ private:
     Planet mercury;
     Planet venus;
     Planet earth;
+    Planet moon;
 
     QOpenGLBuffer vbo, ibo;
     QOpenGLShaderProgram shaderProgram;
