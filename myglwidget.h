@@ -24,6 +24,7 @@
 #include <stack>
 #include <string>
 #include "modelloader.h"
+#include "planet.h"
 
 
 class MyGLWidget : public QOpenGLWidget
@@ -69,6 +70,11 @@ private:
     GLfloat *vboData;
     GLuint *indexData;
 
+    Planet sun;
+    Planet mercury;
+    Planet venus;
+    Planet earth;
+
     QOpenGLBuffer vbo, ibo;
     QOpenGLShaderProgram shaderProgram;
     QOpenGLTexture *qTex;
@@ -81,14 +87,9 @@ private:
     void initializeComponents();
     void initializeVBO(std::string object);
     void addTextureMap(std::string path = "");
-    void draw(Planet &planet);
+    void draw(Planet planet);
     void initializeDebugLogger();
 
-
-    Planet sun;
-    Planet mercury;
-    Planet venus;
-    Planet earth;
 };
 
 #endif // MYGLWIDGET_H

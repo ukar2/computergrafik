@@ -24,18 +24,21 @@ void MyGLWidget::initializeGL()
 
     initializeVBO("sphere_high.obj");           // Vertex- und Indexdata (Array) ins Buffer laden
 
+
     addTextureMap(":/map/sunmap.jpg");
     sun.set_qTex(qTex);
     sun.set_iboLength(iboLength);
-    qTex->release();
 
-    addTextureMap(":/map/sunmap.jpg");
+
+    addTextureMap(":/map/mercurybump.jpg");
     mercury.set_qTex(qTex);
     mercury.set_iboLength(iboLength);
 
-    addTextureMap(":/map/sunmap.jpg");
+
+    addTextureMap(":/map/venusmap.jpg");
     venus.set_qTex(qTex);
     venus.set_iboLength(iboLength);
+
 
     addTextureMap(":/map/earthmap1k.jpg");
     earth.set_qTex(qTex);
@@ -56,60 +59,54 @@ void MyGLWidget::paintGL()
 
     std::stack<QMatrix4x4> matrixStack;
 
-    // Die Model-Matrix speichert wie das 3d Objekt aus den Buffern translatiert/rotiert werden soll(ohne Einfluss auf die Welt).
-    modelMatrix.setToIdentity();
-    modelMatrix.translate(0.0f, 0.0f, -7.0f);
-    modelMatrix.rotate(rotationAngleX, 1.0f, 0.0f, 0.0f);
-    modelMatrix.rotate(rotationAngleY, 0.0f, 1.0f, 0.0f);
-    modelMatrix.rotate(rotationAngleZ, 0.0f, 0.0f, 1.0f);
+    // Die Model-Matrix speichert wie das 3D-Objekt aus den Buffern translatiert/rotiert werden soll(ohne Einfluss auf die Welt).
+    //modelMatrix.setToIdentity();
+    //modelMatrix.translate(0.0f, 0.0f, -7.0f);
+    //modelMatrix.rotate(rotationAngleX, 1.0f, 0.0f, 0.0f);
+    //modelMatrix.rotate(rotationAngleY, 0.0f, 1.0f, 0.0f);
+    //modelMatrix.rotate(rotationAngleZ, 0.0f, 0.0f, 1.0f);
     //modelMatrix.scale(-50.f);
 
 
     // Die View-Matrix speichert wie die Welt translatiert/rotiert werden soll (hat Einfluss auf alle Objekte in der Welt).
     viewMatrix.setToIdentity();
     viewMatrix.translate(moveX, moveY, moveZ);
-    viewMatrix.rotate(0.0f, 1.0f, 0.0f, 0.0f);
-    viewMatrix.rotate(0.0f, 0.0f, 1.0f, 0.0f);
-    viewMatrix.rotate(0.0f, 0.0f, 0.0f, 1.0f);
+    viewMatrix.rotate(rotationAngleX, 1.0f, 0.0f, 0.0f);
+    viewMatrix.rotate(rotationAngleY, 0.0f, 1.0f, 0.0f);
+    viewMatrix.rotate(rotationAngleZ, 0.0f, 0.0f, 1.0f);
 
     modelMatrix.setToIdentity();
 
-    matrixStack.push(modelMatrix);                                  //  Matrix sichern
+    matrixStack.push(modelMatrix);                              //  Matrix sichern
 
     modelMatrix.rotate(counter * -0.06, 0.0, 1.0, 0.0);         //  Eigenrotation der Sonne
+    draw(sun);                                                  //  Rendern der Sonne
 
-    draw("sun");       //  Rendern der Sonne
 
     modelMatrix = matrixStack.top();                            //  Merkur
-
     modelMatrix.rotate(counter * -0.3, 0.0, 1.0, 0.0);          //  Rotation um Zentrum
-    modelMatrix.translate(-5.0f, 0.0f, 0.0f);                   //  Translation vom Zentrum
+    modelMatrix.translate(6.0f, 0.0f, 0.0f);                    //  Abstand vom Zentrum
+    modelMatrix.rotate(counter, 0.0, 1.0, 0.0);                 //  Eigenrotation
     modelMatrix.scale(0.15f);
-    modelMatrix.rotate(counter, 0.0, 1.0, 0.0);                 //  Eigenrotation des Saturn
 
-    drawPlanet(vboSphere, iboSphere, mercury, shaderProgram);   // Rendern des Saturn
+    draw(mercury);
+
 
     modelMatrix = matrixStack.top();                            //  Venus
-    modelMatrix.rotate(counter * -0.2, 0.2, 1.0, 0.0);
-    modelMatrix.translate(5.8f, 0.0f, 0.0f);
-    modelMatrix.scale(0.5f);
-    modelMatrix.rotate(counter, 0.0, 1.0, 0.0);
+    modelMatrix.rotate(counter * -0.2, 0.1, 1.0, 0.0);          //  Rotation um Zentrum
+    modelMatrix.translate(8.0f, 0.0f, 0.0f);                    //  Abstand vom Zentrum
+    modelMatrix.rotate(counter, 0.0, 1.0, 0.0);                 //  Eigenrotation
+    modelMatrix.scale(0.45f);
 
-    drawPlanet(vboSphere, iboSphere, venus, shaderProgram);
+    draw(venus);
 
-    modelMatrix = matrixStack.top();                                //  Erde
-    modelMatrix.rotate(counter * -0.3, 0.0, 1.0, 0.0);
-    modelMatrix.translate(6.1f, 0.0f, 0.0f);
-    modelMatrix.scale(0.43f);
+    modelMatrix = matrixStack.top();                            //  Erde
+    modelMatrix.rotate(counter * -0.3, 0.0, 1.0, 0.0);          //  Rotation um Zentrum
+    modelMatrix.translate(15.0f, 0.0f, 0.0f);
     modelMatrix.rotate(counter * 0.6, 0.0, 1.0, 0.0);
+    modelMatrix.scale(0.55f);
 
-    drawPlanet(vboSphere, iboSphere, earth, shaderProgram);
-
-        modelMatrix.rotate(counter * 0.9, 0.0, 1.0, 0.0);           //  Mond
-        modelMatrix.translate(-2.0f, 0.0f, 0.0f);
-        modelMatrix.scale(0.3);
-
-        drawPlanet(vboSphere, iboSphere, moon, shaderProgram);
+    draw(earth);
 
 
 
@@ -123,10 +120,10 @@ void MyGLWidget::paintGL()
 
 void MyGLWidget::resizeGL(int w, int h)
 {
-    x = (400 + 1)*(w / 2) + 0;
-    y = (400 + 1)*(h / 2) + 0;
+    x = (w/2) - 612;
+    y = (h / 2) - 384;
 
-    // Projektion-Matrix macht aus der 3d Welt ein 2d Bild.
+    // Projektion-Matrix macht aus der 3D-Welt ein 2D-Bild.
     projektionMatrix.setToIdentity();
     projektionMatrix.frustum(-0.05f, 0.05f, -0.05f, 0.05f, 0.1f, 1000.0f);
     glViewport(x, y, w, h);
@@ -163,7 +160,7 @@ void MyGLWidget::initializeVBO(std::string object)
     ibo.create();
     ibo.bind();
     ibo.setUsagePattern(QOpenGLBuffer::StaticDraw);
-    ibo.allocate(indexData, sizeof(GLubyte) * iboLength);
+    ibo.allocate(indexData, sizeof(GLuint) * iboLength);
     ibo.release();
 
 }
@@ -176,13 +173,14 @@ void MyGLWidget::addTextureMap(std::string path)
     if(qTex->textureId() != 0){
         qTex->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
         qTex->setMagnificationFilter(QOpenGLTexture::Linear);
+
     }else{
         qDebug() << "Texture map error ";
     }
 }
 
 
-void MyGLWidget::draw(Planet &planet)
+void MyGLWidget::draw(Planet planet)
 {
     shaderProgram.bind();
     vbo.bind();
@@ -199,7 +197,7 @@ void MyGLWidget::draw(Planet &planet)
     shaderProgram.enableAttributeArray(attrVertices);
     shaderProgram.enableAttributeArray(attrTexCoords);
 
-    planet.qTex->bind();
+    planet.qTex->bind(0);
     shaderProgram.setUniformValue("texture", 0);
 
     int pMatrix = 0;
@@ -222,7 +220,7 @@ void MyGLWidget::draw(Planet &planet)
     offset += 4 * sizeof(GLfloat);
     shaderProgram.setAttributeBuffer(attrTexCoords, GL_FLOAT, offset, 4, stride);
 
-    glDrawElements(GL_QUADS, planet.iboLength, GL_UNSIGNED_INT, (GLvoid*)NULL);
+    glDrawElements(GL_QUADS, iboLength, GL_UNSIGNED_INT, (GLvoid*)NULL);
 
     shaderProgram.disableAttributeArray(attrVertices);
     shaderProgram.disableAttributeArray(attrTexCoords);

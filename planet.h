@@ -14,6 +14,13 @@ public:
 
     unsigned int iboLength;
     QOpenGLTexture* qTex;
+
+    enum Name {
+        Sun,
+        Mercury,
+        Venus,
+        Earth
+    };
 };
 
 #endif // PLANET_H
