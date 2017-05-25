@@ -15,12 +15,21 @@ public:
     unsigned int iboLength;
     QOpenGLTexture* qTex;
 
-    enum Name {
+    enum Name{
         Sun,
         Mercury,
         Venus,
-        Earth
+        Earth,
+        Mars,
+        Jupiter,
+        Saturn,
+        Uranus,
+        Neptune,
+        Moon,
+        Phobos,
+        Deimos
     };
+
 };
 
 #endif // PLANET_H

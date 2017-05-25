@@ -5,5 +5,8 @@
         <file>map/venusmap.jpg</file>
         <file>map/sunmap.jpg</file>
         <file>map/moonmap1k.jpg</file>
+        <file>map/mars_1k_color.jpg</file>
+        <file>map/venus_NASA_Mariner.jpg</file>
+        <file>map/2k_sun.jpg</file>
     </qresource>
 </RCC>

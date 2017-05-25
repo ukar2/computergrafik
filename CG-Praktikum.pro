@@ -44,3 +44,5 @@ RESOURCES += \
     shaders.qrc \
     models.qrc \
     texturemap.qrc
+
+DISTFILES +=

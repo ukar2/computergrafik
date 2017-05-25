@@ -4,5 +4,6 @@
         <file>Model/bunny_low.obj</file>
         <file>Model/sphere_high.obj</file>
         <file>Model/sphere_low.obj</file>
+        <file>Model/sphere_super_high.obj</file>
     </qresource>
 </RCC>

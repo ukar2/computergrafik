@@ -22,6 +22,7 @@ void MyGLWidget::initializeGL()
     f->glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 
+    initializeDebugLogger();
     initializeVBO("sphere_high.obj");           // Vertex- und Indexdata (Array) ins Buffer laden
 
 
@@ -35,7 +36,7 @@ void MyGLWidget::initializeGL()
     mercury.set_iboLength(iboLength);
 
 
-    addTextureMap(":/map/venusmap.jpg");
+    addTextureMap(":/map/venus_NASA_Mariner.jpg");
     venus.set_qTex(qTex);
     venus.set_iboLength(iboLength);
 
@@ -48,6 +49,13 @@ void MyGLWidget::initializeGL()
     moon.set_qTex(qTex);
     moon.set_iboLength(iboLength);
 
+    addTextureMap(":/map/mars_1k_color.jpg");
+    mars.set_qTex(qTex);
+    mars.set_iboLength(iboLength);
+
+    addTextureMap(":/map/mars_1k_color.jpg");
+    fobos.set_qTex(qTex);
+    fobos.set_iboLength(iboLength);
 
     shaderProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/Shader/default330.vert");
     shaderProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/Shader/default330.frag");
@@ -83,40 +91,51 @@ void MyGLWidget::paintGL()
 
     matrixStack.push(modelMatrix);                              //  Matrix sichern
 
-    modelMatrix.rotate(counter * -0.06, 0.0, 1.0, 0.0);         //  Eigenrotation der Sonne
+    modelMatrix.rotate(counter * -0.06f, 0.0f, 1.0f, 0.0f);     //  Eigenrotation der Sonne
+    //modelMatrix.scale(0.5f);
     draw(sun);                                                  //  Rendern der Sonne
 
 
-    modelMatrix = matrixStack.top();                            //  Merkur
-    modelMatrix.rotate(counter * -0.3, 0.0, 1.0, 0.0);          //  Rotation um Zentrum
-    modelMatrix.translate(6.0f, 0.0f, 0.0f);                    //  Abstand vom Zentrum
-    modelMatrix.rotate(counter, 0.0, 1.0, 0.0);                 //  Eigenrotation
-    modelMatrix.scale(0.15f);
 
+    modelMatrix = matrixStack.top();                            //  Merkur
+    modelMatrix.rotate(counter * -0.3f, 0.0f, 1.0f, 0.0f);      //  Rotation um Zentrum
+    modelMatrix.translate(7.0f, 0.0f, 0.0f);                    //  Abstand vom Zentrum
+    modelMatrix.rotate(counter, 0.0f, 1.0f, 0.0f);              //  Eigenrotation
+    modelMatrix.scale(0.3f);
     draw(mercury);
 
 
     modelMatrix = matrixStack.top();                            //  Venus
-    modelMatrix.rotate(counter * -0.2, 0.1, 1.0, 0.0);          //  Rotation um Zentrum
-    modelMatrix.translate(8.0f, 0.0f, 0.0f);                    //  Abstand vom Zentrum
-    modelMatrix.rotate(counter, 0.0, 1.0, 0.0);                 //  Eigenrotation
-    modelMatrix.scale(0.45f);
-
+    modelMatrix.rotate(counter * -0.2f, 0.0f, 1.0f, 0.0f);      //  Rotation um Zentrum
+    modelMatrix.translate(10.0f, 0.0f, 0.0f);                    //  Abstand vom Zentrum
+    modelMatrix.rotate(counter, 0.0f, 1.0f, 0.0f);              //  Eigenrotation
+    modelMatrix.scale(0.5f);
     draw(venus);
 
     modelMatrix = matrixStack.top();                            //  Erde
-    modelMatrix.rotate(counter * -0.3, 0.0, 1.0, 0.0);          //  Rotation um Zentrum
+    modelMatrix.rotate(counter * -0.3f, 0.0f, 1.0f, 0.0f);      //  1. Rotation um Zentrum
     modelMatrix.translate(15.0f, 0.0f, 0.0f);
-    modelMatrix.rotate(counter * 0.6, 0.0, 1.0, 0.0);
-    modelMatrix.scale(0.55f);
-
+    modelMatrix.rotate(counter * 0.3f, 0.0f, 1.0f, 0.0f);      //  2. um eigene Achse
+    modelMatrix.rotate(90.0f, 1.0f, 0.0f, 0.0f);       //  3.
+    modelMatrix.rotate(counter * 0.5f, 0.0f, 1.0f, 0.0f);// 4
+    modelMatrix.scale(0.55f); // 5
     draw(earth);
+// 3, 4 und 5 zurückrechnen
 
-    modelMatrix.rotate(counter * 0.9, 0.0, 1.0, 0.0);
+    modelMatrix.rotate(counter * 2.0f, 0.0f, 1.0f, 0.0f);
     modelMatrix.translate(-2.0f, 0.0f, 0.0f);
-    modelMatrix.scale(0.3);
-
+    modelMatrix.rotate(counter * 0.5f, 0.23f, 1.0f, 0.0f);  // Eigenrotation
+    modelMatrix.scale(0.2f);
     draw(moon);
+
+
+    modelMatrix = matrixStack.top();
+    modelMatrix.rotate(counter * -0.35f, 0.0f, 1.0f, 0.0f);
+    modelMatrix.translate(25.0f, 0.0f, 0.0f);
+    modelMatrix.rotate(counter * 0.5f, 0.0f, 1.0f, 0.0f);
+    modelMatrix.scale(0.45f);
+
+    draw(mars);
 
     if(flag){
             this->update();
@@ -128,8 +147,8 @@ void MyGLWidget::paintGL()
 
 void MyGLWidget::resizeGL(int w, int h)
 {
-    x = (w/2) - 612;
-    y = (h / 2) - 384;
+    GLint x = (w / 2) - 612;
+    GLint y = (h / 2) - 384;
 
     // Projektion-Matrix macht aus der 3D-Welt ein 2D-Bild.
     projektionMatrix.setToIdentity();
@@ -244,14 +263,12 @@ void MyGLWidget::draw(Planet planet)
 
 void MyGLWidget::initializeComponents()
 {
-    x = 0;
-    y = 0;
     flag = false;
     counter = 0.0f;
     wheel = 0;
     moveX = 0.0f;
     moveY = 0.0f;
-    moveZ = -5.0f;
+    moveZ = -7.0f;
     rotationAngleX = 0.0f;
     rotationAngleY = 0.0f;
     rotationAngleZ = 0.0f;
@@ -296,10 +313,10 @@ void MyGLWidget::keyPressEvent(QKeyEvent *event)
         moveY--;
         break;
     case 65:
-        moveX--;
+        moveX++;
         break;
     case 68:
-        moveX++;
+        moveX--;
         break;
     case 38:
         moveY++;
@@ -326,33 +343,21 @@ void MyGLWidget::wheelEvent(QWheelEvent *event)
 {
     int deltaValue = event->delta();
 
-    //if(wheel >= -5 && wheel <= 5)
-    //{
-        if(deltaValue < 0){
-            moveZ++;
-            wheel++;
-        }
-        else if(deltaValue > 0){
-            moveZ--;
-            wheel--;
-        }else{
 
-        }
+    if(deltaValue < 0){
+        moveZ--;
+        wheel--;
+    }
+    else if(deltaValue > 0){
+        moveZ++;
+        wheel++;
+    }else{
 
-        //if(wheel == -6){
-            //moveZ++;
-            //wheel++;
-        //}
-        //if(wheel == 6){
-          //  moveZ--;
-            //wheel--;
-        //}
+    }
 
-        emit wheelValueForZChanged(wheel);
-        this->update(); // Widges wird upgedated
-    //}
-
+    emit wheelValueForZChanged(wheel);  // change Spin-Box value
     event->accept();
+    this->update(); // Widge update -> painGL()
 }
 
 
