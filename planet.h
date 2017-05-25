@@ -1,20 +1,19 @@
 #ifndef PLANET_H
 #define PLANET_H
 
+#include <QOpenGLShaderProgram>
 #include <QOpenGLTexture>
 #include <QOpenGLBuffer>
+
+#include <QImage>
+
+#include <string>
+
+using namespace std;
 
 class Planet
 {
 public:
-    Planet();
-
-    void set_qTex(QOpenGLTexture *qTex);
-    void set_iboLength(unsigned int iboLength);
-
-    unsigned int iboLength;
-    QOpenGLTexture* qTex;
-
     enum Name{
         Sun,
         Mercury,
@@ -28,7 +27,17 @@ public:
         Moon,
         Phobos,
         Deimos
-    };
+    } name;
+
+    Planet(Name planet);
+    ~Planet();
+
+    bool addTextureMap(string path = "");
+    void releaseTexture();
+    void bindTexture(QOpenGLShaderProgram *shaderProgram, string texture);
+
+private:
+    QOpenGLTexture *qTex;
 
 };
 

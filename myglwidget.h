@@ -56,8 +56,7 @@ private:
     bool flag;
     unsigned int vboLength;
     unsigned int iboLength;
-    // GLint y;
-    // GLint x;
+
     GLint wheel;
     GLfloat counter;
     GLfloat moveX;
@@ -70,13 +69,7 @@ private:
     GLfloat *vboData;
     GLuint *indexData;
 
-    Planet sun;
-    Planet mercury;
-    Planet venus;
-    Planet earth;
-    Planet moon;
-    Planet mars;
-    Planet fobos;
+    std::stack<Planet> planets;
 
     QOpenGLBuffer vbo, ibo;
     QOpenGLShaderProgram shaderProgram;

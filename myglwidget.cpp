@@ -26,36 +26,10 @@ void MyGLWidget::initializeGL()
     initializeVBO("sphere_high.obj");           // Vertex- und Indexdata (Array) ins Buffer laden
 
 
-    addTextureMap(":/map/sunmap.jpg");
-    sun.set_qTex(qTex);
-    sun.set_iboLength(iboLength);
+    Planet planet(Planet::Mars);
+    planet.addTextureMap(":/map/2k_uranus.jpg");
+    planets.push(planet);
 
-
-    addTextureMap(":/map/mercurybump.jpg");
-    mercury.set_qTex(qTex);
-    mercury.set_iboLength(iboLength);
-
-
-    addTextureMap(":/map/venus_NASA_Mariner.jpg");
-    venus.set_qTex(qTex);
-    venus.set_iboLength(iboLength);
-
-
-    addTextureMap(":/map/earthmap1k.jpg");
-    earth.set_qTex(qTex);
-    earth.set_iboLength(iboLength);
-
-    addTextureMap(":/map/moonmap1k.jpg");
-    moon.set_qTex(qTex);
-    moon.set_iboLength(iboLength);
-
-    addTextureMap(":/map/mars_1k_color.jpg");
-    mars.set_qTex(qTex);
-    mars.set_iboLength(iboLength);
-
-    addTextureMap(":/map/mars_1k_color.jpg");
-    fobos.set_qTex(qTex);
-    fobos.set_iboLength(iboLength);
 
     shaderProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/Shader/default330.vert");
     shaderProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/Shader/default330.frag");
@@ -92,12 +66,19 @@ void MyGLWidget::paintGL()
     matrixStack.push(modelMatrix);                              //  Matrix sichern
 
     modelMatrix.rotate(counter * -0.06f, 0.0f, 1.0f, 0.0f);     //  Eigenrotation der Sonne
-    //modelMatrix.scale(0.5f);
-    draw(sun);                                                  //  Rendern der Sonne
+    modelMatrix.scale(0.5f);
+
+    if(!planets.empty()){
+        Planet p = planets.top();
+        //planets.pop();
+        draw(p);                                                  //  Rendern der Sonne
+    }else{
+        qDebug() << "Error: stack is empty.";
+    }
 
 
 
-    modelMatrix = matrixStack.top();                            //  Merkur
+    /*modelMatrix = matrixStack.top();                            //  Merkur
     modelMatrix.rotate(counter * -0.3f, 0.0f, 1.0f, 0.0f);      //  Rotation um Zentrum
     modelMatrix.translate(7.0f, 0.0f, 0.0f);                    //  Abstand vom Zentrum
     modelMatrix.rotate(counter, 0.0f, 1.0f, 0.0f);              //  Eigenrotation
@@ -135,7 +116,7 @@ void MyGLWidget::paintGL()
     modelMatrix.rotate(counter * 0.5f, 0.0f, 1.0f, 0.0f);
     modelMatrix.scale(0.45f);
 
-    draw(mars);
+    draw(mars);*/
 
     if(flag){
             this->update();
@@ -181,13 +162,13 @@ void MyGLWidget::initializeVBO(std::string object)
     vbo.create();
     vbo.bind();
     vbo.setUsagePattern(QOpenGLBuffer::StaticDraw);
-    vbo.allocate(vboData, sizeof(GLfloat) * vboLength);
+    vbo.allocate((const void*)vboData, sizeof(GLfloat) * (GLfloat)vboLength);
     vbo.release();
 
     ibo.create();
     ibo.bind();
     ibo.setUsagePattern(QOpenGLBuffer::StaticDraw);
-    ibo.allocate(indexData, sizeof(GLuint) * iboLength);
+    ibo.allocate((const void*)indexData, sizeof(GLuint) * iboLength);
     ibo.release();
 
 }
@@ -200,6 +181,8 @@ void MyGLWidget::addTextureMap(std::string path)
     if(qTex->textureId() != 0){
         qTex->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
         qTex->setMagnificationFilter(QOpenGLTexture::Linear);
+        qTex->generateMipMaps(2, true);
+        qTex->allocateStorage();
 
     }else{
         qDebug() << "Texture map error ";
@@ -224,8 +207,8 @@ void MyGLWidget::draw(Planet planet)
     shaderProgram.enableAttributeArray(attrVertices);
     shaderProgram.enableAttributeArray(attrTexCoords);
 
-    planet.qTex->bind(0);
-    shaderProgram.setUniformValue("texture", 0);
+    planet.bindTexture(&shaderProgram, "texture");
+    //shaderProgram.setUniformValue("texture", 0);
 
     int pMatrix = 0;
     pMatrix = shaderProgram.uniformLocation("projektionMatrix");
@@ -248,11 +231,12 @@ void MyGLWidget::draw(Planet planet)
     shaderProgram.setAttributeBuffer(attrTexCoords, GL_FLOAT, offset, 4, stride);
 
     glDrawElements(GL_QUADS, iboLength, GL_UNSIGNED_INT, (GLvoid*)NULL);
+    glFlush();
 
     shaderProgram.disableAttributeArray(attrVertices);
     shaderProgram.disableAttributeArray(attrTexCoords);
 
-    planet.qTex->release();
+    planet.releaseTexture();
     vbo.release();
     ibo.release();
 
@@ -390,8 +374,11 @@ MyGLWidget::~MyGLWidget()
 {
     vbo.release();
     ibo.release();
-    qTex->release();
+    //qTex->release();
     shaderProgram.release();
+    delete vboData;
+    delete indexData;
+    //delete qTex;
     glDisableClientState(GL_VERTEX_ARRAY);
     glDisableClientState(GL_COLOR_ARRAY);
 }

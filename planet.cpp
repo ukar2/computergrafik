@@ -1,16 +1,45 @@
 #include "planet.h"
 
-Planet::Planet()
+Planet::Planet(Name planet)
 {
-
+    this->name = planet;
 }
 
-void Planet::set_qTex(QOpenGLTexture* qTex)
+
+bool Planet::addTextureMap(string path)
 {
-    this->qTex = qTex;
+    qTex = new QOpenGLTexture(QImage(path.c_str()).mirrored());
+
+    if(qTex->textureId() != 0){
+        qTex->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
+        qTex->setMagnificationFilter(QOpenGLTexture::Linear);
+        qTex->generateMipMaps(1, true);
+        qTex->allocateStorage();
+        return true;
+
+    }else{
+        return false;
+    }
 }
 
-void Planet::set_iboLength(unsigned int iboLength)
+
+void Planet::bindTexture(QOpenGLShaderProgram *shaderProgram, string texture)
 {
-    this->iboLength = iboLength;
+    shaderProgram->setUniformValue(texture.c_str(), 0);
+    this->qTex->bind();
+}
+
+
+void Planet::releaseTexture()
+{
+    this->qTex->release();
+}
+
+
+Planet::~Planet()
+{
+    qTex->release();
+
+    if(!qTex)
+        delete qTex;
 }
