@@ -26,9 +26,29 @@ void MyGLWidget::initializeGL()
     initializeVBO("sphere_high.obj");           // Vertex- und Indexdata (Array) ins Buffer laden
 
 
-    Planet planet(Planet::Mars);
-    planet.addTextureMap(":/map/2k_uranus.jpg");
-    planets.push(planet);
+    Planet planet1 = Planet::getPlanet(Name::Sun);
+    planet1.setTextureMap(":/map/sunmap.jpg");
+    planet1.pushToStorage(planet1);
+
+    Planet planet2 = Planet::getPlanet(Name::Mercury);
+    planet2.setTextureMap(":/map/2k_mercury.jpg");
+    planet2.pushToStorage(planet2);
+
+    Planet planet3 = Planet::getPlanet(Name::Venus);
+    planet3.setTextureMap(":/map/2k_venus_atmosphere.jpg");
+    planet3.pushToStorage(planet3);
+
+    Planet planet4 = Planet::getPlanet(Name::Earth);
+    planet4.setTextureMap(":/map/2k_earth_daymap.jpg");
+    planet4.pushToStorage(planet4);
+
+    Planet planet5 = Planet::getPlanet(Name::Mars);
+    planet5.setTextureMap(":/map/2k_mars.jpg");
+    planet5.pushToStorage(planet5);
+
+    Planet planet6 = Planet::getPlanet(Name::Moon);
+    planet6.setTextureMap(":/map/moonmap1k.jpg");
+    planet6.pushToStorage(planet6);
 
 
     shaderProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/Shader/default330.vert");
@@ -61,67 +81,65 @@ void MyGLWidget::paintGL()
     viewMatrix.rotate(rotationAngleY, 0.0f, 1.0f, 0.0f);
     viewMatrix.rotate(rotationAngleZ, 0.0f, 0.0f, 1.0f);
 
+
     modelMatrix.setToIdentity();
 
     matrixStack.push(modelMatrix);                              //  Matrix sichern
-
-    modelMatrix.rotate(counter * -0.06f, 0.0f, 1.0f, 0.0f);     //  Eigenrotation der Sonne
-    modelMatrix.scale(0.5f);
-
-    if(!planets.empty()){
-        Planet p = planets.top();
-        //planets.pop();
-        draw(p);                                                  //  Rendern der Sonne
-    }else{
-        qDebug() << "Error: stack is empty.";
-    }
+    //modelMatrix = matrixStack.top();
+    //modelMatrix.rotate(counter * 0.06f, 0.126f, 0.992f, 0.0f);     //  Eigenrotation der Sonne
+    //Planet p = Planet::getPlanet(Name::Sun);
+    //draw(p);                                                    //  Rendern der Sonne
 
 
 
-    /*modelMatrix = matrixStack.top();                            //  Merkur
-    modelMatrix.rotate(counter * -0.3f, 0.0f, 1.0f, 0.0f);      //  Rotation um Zentrum
-    modelMatrix.translate(7.0f, 0.0f, 0.0f);                    //  Abstand vom Zentrum
-    modelMatrix.rotate(counter, 0.0f, 1.0f, 0.0f);              //  Eigenrotation
-    modelMatrix.scale(0.3f);
-    draw(mercury);
+    //modelMatrix = matrixStack.top();                            //  Merkur
+    //modelMatrix.rotate(counter * -0.3f, 0.0f, 1.0f, 0.0f);      //  Rotation um Zentrum
+    //modelMatrix.translate(7.0f, 0.0f, 0.0f);                    //  Abstand vom Zentrum
+    //modelMatrix.rotate(counter, 0.0f, 1.0f, 0.0f);              //  Eigenrotation
+    //modelMatrix.scale(0.3f);
+    //Planet mercury = Planet::getPlanet(Name::Mercury);
+    //draw(mercury);
 
 
-    modelMatrix = matrixStack.top();                            //  Venus
-    modelMatrix.rotate(counter * -0.2f, 0.0f, 1.0f, 0.0f);      //  Rotation um Zentrum
-    modelMatrix.translate(10.0f, 0.0f, 0.0f);                    //  Abstand vom Zentrum
-    modelMatrix.rotate(counter, 0.0f, 1.0f, 0.0f);              //  Eigenrotation
-    modelMatrix.scale(0.5f);
-    draw(venus);
+    //modelMatrix = matrixStack.top();                            //  Venus
+    //modelMatrix.rotate(counter * -0.2f, 0.0f, 1.0f, 0.0f);      //  Rotation um Zentrum
+    //modelMatrix.translate(10.0f, 0.0f, 0.0f);                   //  Abstand vom Zentrum
+    //modelMatrix.rotate(counter, 0.0f, 1.0f, 0.0f);              //  Eigenrotation
+    //modelMatrix.scale(0.5f);
+    //Planet venus = Planet::getPlanet(Name::Venus);
+    //draw(venus);
 
     modelMatrix = matrixStack.top();                            //  Erde
     modelMatrix.rotate(counter * -0.3f, 0.0f, 1.0f, 0.0f);      //  1. Rotation um Zentrum
     modelMatrix.translate(15.0f, 0.0f, 0.0f);
-    modelMatrix.rotate(counter * 0.3f, 0.0f, 1.0f, 0.0f);      //  2. um eigene Achse
-    modelMatrix.rotate(90.0f, 1.0f, 0.0f, 0.0f);       //  3.
-    modelMatrix.rotate(counter * 0.5f, 0.0f, 1.0f, 0.0f);// 4
+    modelMatrix.rotate(counter * 0.3f, 0.0f, 1.0f, 0.0f);       //  2. nach translation zurueck rotieren
+    modelMatrix.rotate(23.40f, 0.0f, 0.0f, 1.0f);               //  3. neigen um den festen Winkel
+    modelMatrix.rotate(counter * 0.5f, 0.0f, 1.0f, 0.0f);       //  4. Eigenrotation
     modelMatrix.scale(0.55f); // 5
+    Planet earth = Planet::getPlanet(Name::Earth);
     draw(earth);
-// 3, 4 und 5 zurückrechnen
+    // 3, 4 und 5 zurückrechnen
 
     modelMatrix.rotate(counter * 2.0f, 0.0f, 1.0f, 0.0f);
     modelMatrix.translate(-2.0f, 0.0f, 0.0f);
-    modelMatrix.rotate(counter * 0.5f, 0.23f, 1.0f, 0.0f);  // Eigenrotation
+    modelMatrix.rotate(counter * 0.5f, 0.23f, 1.0f, 0.0f);      // Eigenrotation
     modelMatrix.scale(0.2f);
+    Planet moon = Planet::getPlanet(Name::Moon);
     draw(moon);
 
 
-    modelMatrix = matrixStack.top();
-    modelMatrix.rotate(counter * -0.35f, 0.0f, 1.0f, 0.0f);
-    modelMatrix.translate(25.0f, 0.0f, 0.0f);
-    modelMatrix.rotate(counter * 0.5f, 0.0f, 1.0f, 0.0f);
-    modelMatrix.scale(0.45f);
-
-    draw(mars);*/
+    //modelMatrix = matrixStack.top();
+    //modelMatrix.rotate(counter * -0.35f, 0.0f, 1.0f, 0.0f);
+    //modelMatrix.translate(25.0f, 0.0f, 0.0f);
+    //modelMatrix.rotate(counter * 0.5f, 0.0f, 1.0f, 0.0f);
+    //modelMatrix.scale(0.45f);
+    //Planet mars = Planet::getPlanet(Name::Mars);
+    //draw(mars);
 
     if(flag){
-            this->update();
-            counter++;
-        }
+        this->update();
+        counter++;
+    }
 
 }
 
@@ -154,7 +172,7 @@ void MyGLWidget::initializeVBO(std::string object)
         model.genVBO(vboData, 0, false, true);
         model.genIndexArray(indexData);
     }else{
-        qDebug() << "Model error ";
+        qDebug() << "ModelLoader error ";
     }
     // --- end.
 
@@ -174,7 +192,7 @@ void MyGLWidget::initializeVBO(std::string object)
 }
 
 
-void MyGLWidget::addTextureMap(std::string path)
+/*void MyGLWidget::addTextureMap(std::string path)
 {
     qTex = new QOpenGLTexture(QImage(path.c_str()).mirrored());
 
@@ -187,7 +205,7 @@ void MyGLWidget::addTextureMap(std::string path)
     }else{
         qDebug() << "Texture map error ";
     }
-}
+}*/
 
 
 void MyGLWidget::draw(Planet planet)
@@ -207,8 +225,9 @@ void MyGLWidget::draw(Planet planet)
     shaderProgram.enableAttributeArray(attrVertices);
     shaderProgram.enableAttributeArray(attrTexCoords);
 
+
     planet.bindTexture(&shaderProgram, "texture");
-    //shaderProgram.setUniformValue("texture", 0);
+
 
     int pMatrix = 0;
     pMatrix = shaderProgram.uniformLocation("projektionMatrix");
@@ -374,11 +393,13 @@ MyGLWidget::~MyGLWidget()
 {
     vbo.release();
     ibo.release();
-    //qTex->release();
+
     shaderProgram.release();
-    delete vboData;
-    delete indexData;
-    //delete qTex;
+    if(!vboData)
+        delete vboData;
+    if(!indexData)
+        delete indexData;
+
     glDisableClientState(GL_VERTEX_ARRAY);
     glDisableClientState(GL_COLOR_ARRAY);
 }

@@ -8,36 +8,44 @@
 #include <QImage>
 
 #include <string>
+#include <map>
 
 using namespace std;
+
+enum Name{
+    Sun,
+    Mercury,
+    Venus,
+    Earth,
+    Mars,
+    Jupiter,
+    Saturn,
+    Uranus,
+    Neptune,
+    Moon,
+    Phobos,
+    Deimos
+};
 
 class Planet
 {
 public:
-    enum Name{
-        Sun,
-        Mercury,
-        Venus,
-        Earth,
-        Mars,
-        Jupiter,
-        Saturn,
-        Uranus,
-        Neptune,
-        Moon,
-        Phobos,
-        Deimos
-    } name;
+    Name name;
 
-    Planet(Name planet);
     ~Planet();
 
-    bool addTextureMap(string path = "");
+    static Planet getPlanet(Name planet);
+    static void pushToStorage(Planet planet);
+
+    bool setTextureMap(string path = "");
     void releaseTexture();
     void bindTexture(QOpenGLShaderProgram *shaderProgram, string texture);
 
 private:
     QOpenGLTexture *qTex;
+
+    Planet();
+    Planet(Name planet);
 
 };
 

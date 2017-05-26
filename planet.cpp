@@ -1,20 +1,43 @@
 #include "planet.h"
 
-Planet::Planet(Name planet)
+
+static map<Name, Planet> storage;
+
+
+Planet Planet::getPlanet(Name name)
 {
-    this->name = planet;
+    map<Name, Planet>::iterator iter = storage.find(name);
+
+    if(iter == storage.end()){
+        Planet p(name);
+        return p;
+    }
+
+    return iter->second;
 }
 
 
-bool Planet::addTextureMap(string path)
+void Planet::pushToStorage(Planet planet)
+{
+    map<Name, Planet>::iterator iter = storage.find(planet.name);
+
+    if(iter == storage.end()){
+        storage.insert(make_pair(planet.name, planet));
+    }else{
+        storage.erase(planet.name);
+        storage.insert(make_pair(planet.name, planet));
+    }
+}
+
+bool Planet::setTextureMap(string path)
 {
     qTex = new QOpenGLTexture(QImage(path.c_str()).mirrored());
 
     if(qTex->textureId() != 0){
         qTex->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
         qTex->setMagnificationFilter(QOpenGLTexture::Linear);
-        qTex->generateMipMaps(1, true);
-        qTex->allocateStorage();
+        //qTex->generateMipMaps(1, true);
+        //qTex->allocateStorage();
         return true;
 
     }else{
@@ -25,8 +48,8 @@ bool Planet::addTextureMap(string path)
 
 void Planet::bindTexture(QOpenGLShaderProgram *shaderProgram, string texture)
 {
-    shaderProgram->setUniformValue(texture.c_str(), 0);
     this->qTex->bind();
+    shaderProgram->setUniformValue(texture.c_str(), 0);
 }
 
 
@@ -35,10 +58,21 @@ void Planet::releaseTexture()
     this->qTex->release();
 }
 
+Planet::Planet(Name planet)
+{
+    this->name = planet;
+}
+
+
+Planet::Planet()
+{
+
+}
 
 Planet::~Planet()
 {
-    qTex->release();
+    /*if(qTex->isBound())
+        qTex->release();*/
 
     if(!qTex)
         delete qTex;

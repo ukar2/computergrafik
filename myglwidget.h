@@ -69,7 +69,8 @@ private:
     GLfloat *vboData;
     GLuint *indexData;
 
-    std::stack<Planet> planets;
+    // Planet planet;
+    // std::stack<Planet> planets;
 
     QOpenGLBuffer vbo, ibo;
     QOpenGLShaderProgram shaderProgram;
@@ -78,11 +79,11 @@ private:
     // p*v*m Reihenfolge ist wichtig!!!
     QMatrix4x4 projektionMatrix;
     QMatrix4x4 viewMatrix;              // --- die Welt (Kamera)
-    QMatrix4x4 modelMatrix;             // --- Das 3D Objekt
+    QMatrix4x4 modelMatrix;             // --- Das 3D-Objekt
 
     void initializeComponents();
     void initializeVBO(std::string object);
-    void addTextureMap(std::string path = "");
+    // void addTextureMap(std::string path = "");
     void draw(Planet planet);
     void initializeDebugLogger();
 
