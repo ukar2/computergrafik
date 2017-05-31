@@ -54,8 +54,8 @@ signals:
 
 private:
     bool flag;
-    unsigned int vboLength;
-    unsigned int iboLength;
+    //unsigned int vboLength;
+    //unsigned int iboLength;
 
     GLint wheel;
     GLfloat counter;
@@ -66,25 +66,26 @@ private:
     GLfloat rotationAngleY;
     GLfloat rotationAngleZ;
 
-    GLfloat *vboData;
-    GLuint *indexData;
+    //GLfloat *vboData;
+    //GLuint *indexData;
 
-    // Planet planet;
+    //Planet p;
     // std::stack<Planet> planets;
 
-    QOpenGLBuffer vbo, ibo;
-    QOpenGLShaderProgram shaderProgram;
-    QOpenGLTexture *qTex;
+    //QOpenGLBuffer vbo, ibo;
+    //QOpenGLShaderProgram shaderProgram;
+    //QOpenGLTexture *qTex;
 
     // p*v*m Reihenfolge ist wichtig!!!
     QMatrix4x4 projektionMatrix;
     QMatrix4x4 viewMatrix;              // --- die Welt (Kamera)
     QMatrix4x4 modelMatrix;             // --- Das 3D-Objekt
+    //std::stack<QMatrix4x4> matrixStack;
 
     void initializeComponents();
-    void initializeVBO(std::string object);
+    //void initializeVBO(std::string object);
     // void addTextureMap(std::string path = "");
-    void draw(Planet planet);
+    //void draw(Planet planet);
     void initializeDebugLogger();
 
 };
