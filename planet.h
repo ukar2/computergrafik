@@ -10,25 +10,13 @@
 
 #include <string>
 #include <map>
+#include <stack>
 
 #include "modelloader.h"
+#include "caddy.h"
 
 using namespace std;
 
-enum Name{
-    Sun,
-    Mercury,
-    Venus,
-    Earth,
-    Mars,
-    Jupiter,
-    Saturn,
-    Uranus,
-    Neptune,
-    Moon,
-    Phobos,
-    Deimos
-};
 
 class Planet
 {
@@ -54,7 +42,7 @@ public:
     void bindTexture(QOpenGLShaderProgram *shaderProgram, string texture);
     void releaseTexture();  // kann sein dass alle drei ^ besser in eine
     void startShaderProgram();
-    void rendern();
+    void render(QMatrix4x4 vMatrix, QMatrix4x4 mMatrix, GLfloat counter, Planet *child);
     void draw();
     void resize();
 
@@ -66,7 +54,7 @@ private:
     QMatrix4x4 modelMatrix;
     QMatrix4x4 projektionMatrix;
     QMatrix4x4 viewMatrix;
-
+    std::stack<QMatrix4x4> matrixStack;
 
 };
 

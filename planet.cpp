@@ -14,6 +14,7 @@ Planet::Planet() : vbo(QOpenGLBuffer::VertexBuffer), ibo(QOpenGLBuffer::IndexBuf
 
 Planet::Planet(Name name) : vbo(QOpenGLBuffer::VertexBuffer), ibo(QOpenGLBuffer::IndexBuffer)
 {
+    //Caddy bez = Caddy::Earth;
     this->p_name = name;
     this->child = NULL;
     initVBO();
@@ -32,45 +33,60 @@ Planet::Planet(Planet *name) : vbo(QOpenGLBuffer::VertexBuffer), ibo(QOpenGLBuff
 
 Planet *Planet::getPlanet(Name name)
 {
+    Planet *p;
+
     map<Name, Planet*>::iterator iter = storage.find(name);
 
     if(iter == storage.end()){
-        Planet *p = new Planet(name);
+        p = new Planet(name);
         return p;
     }
 
 
-    /*switch(name){
+    p = iter->second;
+    switch(name){
     case Name::Sun:
-        setTextureMap(":/map/sunmap.jpg");
+        p->setTextureMap(":/map/sunmap.jpg");
         break;
     case Name::Mercury:
-        setTextureMap(":/map/mercurybump.jpg");
+        p->setTextureMap(":/map/mercurybump.jpg");
         break;
     case Name::Venus:
-        setTextureMap(":/map/2k_venus_atmosphere.jpg");
+        p->setTextureMap(":/map/2k_venus_atmosphere.jpg");
         break;
     case Name::Earth:
-        setTextureMap(":/map/2k_earth_daymap.jpg");
+        p->setTextureMap(":/map/2k_earth_daymap.jpg");
         break;
     case Name::Mars:
-        setTextureMap(":/map/2k_mars.jpg");
+        p->setTextureMap(":/map/2k_mars.jpg");
         break;
     case Name::Jupiter:
-        setTextureMap(":/map/2k_jupiter.jpg");
+        p->setTextureMap(":/map/2k_jupiter.jpg");
         break;
     case Name::Saturn:
-        setTextureMap(":/map/2k_saturn.jpg");
+        p->setTextureMap(":/map/2k_saturn.jpg");
         break;
     case Name::Uranus:
-        setTextureMap(":/map/2k_uranus.jpg");
+        p->setTextureMap(":/map/2k_uranus.jpg");
         break;
     case Name::Neptune:
-        setTextureMap(":/map/2k_neptune.jpg");
+        p->setTextureMap(":/map/2k_neptune.jpg");
         break;
-    }*/
+    case Name::Moon:
+        p->setTextureMap(":/map/2k_mercury.jpg");
+        break;
+    case Name::Phobos:
+        p->setTextureMap(":/map/moonmap1k.jpg");
+        break;
+    case Name::Deimos:
+        p->setTextureMap(":/map/moonmap1k.jpg");
+        break;
+    default:
+        qDebug() << "Textur map not found";
+        break;
+    }
 
-    return iter->second;
+    return p;
     //return p;
 }
 
@@ -153,23 +169,21 @@ void Planet::startShaderProgram()
 
 
 
-void Planet::rendern()
+void Planet::render(QMatrix4x4 vMatrix, QMatrix4x4 mMatrix, GLfloat counter, Planet *child)
 {
-    viewMatrix.setToIdentity();
-    viewMatrix.translate(0.0f, 0.0f, -7.0f);
-    viewMatrix.rotate(0.0f, 1.0f, 0.0f, 0.0f);
-    viewMatrix.rotate(0.0f, 0.0f, 1.0f, 0.0f);
-    viewMatrix.rotate(0.0f, 0.0f, 0.0f, 1.0f);
+    QMatrix4x4 matrix;
 
-   if(child == NULL)
-   {
-       modelMatrix.setToIdentity();
-       modelMatrix.rotate(7.25f, 0.0f, 1.0f, 0.0f);
-       draw();
-   }else{
-       //child->setMatrixSet(projektionMatrix, viewMatrix, modelMatrix);
-       qDebug() << "rendern Error";
-   }
+    viewMatrix = vMatrix;
+
+    matrix.setToIdentity();
+
+    matrix.rotate(counter, 0.0f, 1.0f, 0.0f);
+    //matrix.translate(0.0f, 0.0f, 0.0f);
+    //matrix.rotate(counter * -1.0f, 0.0f, 1.0f, 0.0f);
+
+    modelMatrix = mMatrix * matrix;
+    draw();
+
 }
 
 

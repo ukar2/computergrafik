@@ -25,6 +25,7 @@
 #include <string>
 #include "modelloader.h"
 #include "planet.h"
+#include "caddy.h"
 
 
 class MyGLWidget : public QOpenGLWidget

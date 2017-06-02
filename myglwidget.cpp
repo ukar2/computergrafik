@@ -26,16 +26,14 @@ void MyGLWidget::initializeGL()
 
     initializeDebugLogger();
 
-    // 1. init VBO("sphere_high.obj")
-    Planet *p = Planet::getPlanet(Name::Sun);
+    Caddy caddy;
+    // 1. init VBO("sphere_high.obj") && set Texture map
+    Planet *planet = Planet::getPlanet(caddy.getName());
 
-    // 2. set Texture map
-    p->setTextureMap(":/map/sunmap.jpg");
+    // 2. start individual shader program for each planet
+    planet->startShaderProgram();
 
-    // 3. shader start
-    p->startShaderProgram();
-
-    p->pushToStorage(p);
+    Planet::pushToStorage(planet);
 
 }
 
@@ -47,8 +45,20 @@ void MyGLWidget::paintGL()
 
     f->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    Planet *p = Planet::getPlanet(Name::Sun);
-    p->rendern();
+    viewMatrix.setToIdentity();
+    viewMatrix.translate(moveX, moveY, moveZ);
+    viewMatrix.rotate(rotationAngleX, 1.0f, 0.0f, 0.0f);
+    viewMatrix.rotate(rotationAngleY, 0.0f, 1.0f, 0.0f);
+    viewMatrix.rotate(rotationAngleZ, 0.0f, 0.0f, 1.0f);
+
+    modelMatrix.setToIdentity();
+    modelMatrix.rotate(counter, 0.0f, 1.0f, 0.0f);
+    modelMatrix.translate(0.0f, 0.0f, 0.0f);
+    modelMatrix.rotate(counter * -1.0f, 0.0f, 1.0f, 0.0f);
+
+    Caddy caddy;
+    Planet *p = Planet::getPlanet(caddy.getName());
+    p->render(viewMatrix, modelMatrix, counter, NULL);
 
     if(flag){
         this->update();

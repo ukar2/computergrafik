@@ -31,12 +31,14 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     myglwidget.cpp \
     modelloader.cpp \
-    planet.cpp
+    planet.cpp \
+    caddy.cpp
 
 HEADERS  += mainwindow.h \
     myglwidget.h \
     modelloader.h \
-    planet.h
+    planet.h \
+    caddy.h
 
 FORMS    += mainwindow.ui
 
