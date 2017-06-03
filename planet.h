@@ -42,7 +42,7 @@ public:
     void bindTexture(QOpenGLShaderProgram *shaderProgram, string texture);
     void releaseTexture();  // kann sein dass alle drei ^ besser in eine
     void startShaderProgram();
-    void render(QMatrix4x4 vMatrix, QMatrix4x4 mMatrix, GLfloat counter, Planet *child);
+    void render(QMatrix4x4 vMatrix, QMatrix4x4 mMatrix, GLfloat angle, Planet *child);
     void draw();
     void resize();
 

@@ -28,12 +28,17 @@ void MyGLWidget::initializeGL()
 
     Caddy caddy;
     // 1. init VBO("sphere_high.obj") && set Texture map
-    Planet *planet = Planet::getPlanet(caddy.getName());
+    //Planet *sun = Planet::getPlanet(caddy.getName());
 
     // 2. start individual shader program for each planet
-    planet->startShaderProgram();
+    //sun->startShaderProgram();
 
-    Planet::pushToStorage(planet);
+    //Planet::pushToStorage(sun);
+
+
+    Planet *mercury = Planet::getPlanet(Name::Mercury);
+    mercury->startShaderProgram();
+    Planet::pushToStorage(mercury);
 
 }
 
@@ -52,13 +57,20 @@ void MyGLWidget::paintGL()
     viewMatrix.rotate(rotationAngleZ, 0.0f, 0.0f, 1.0f);
 
     modelMatrix.setToIdentity();
-    modelMatrix.rotate(counter, 0.0f, 1.0f, 0.0f);
-    modelMatrix.translate(0.0f, 0.0f, 0.0f);
-    modelMatrix.rotate(counter * -1.0f, 0.0f, 1.0f, 0.0f);
+    //modelMatrix.rotate(counter, 0.0f, 1.0f, 0.0f);
+    //modelMatrix.translate(0.0f, 0.0f, 0.0f);
+    //modelMatrix.rotate(counter * -1.0f, 0.0f, 1.0f, 0.0f);
 
     Caddy caddy;
-    Planet *p = Planet::getPlanet(caddy.getName());
-    p->render(viewMatrix, modelMatrix, counter, NULL);
+    //Planet *sun = Planet::getPlanet(caddy.getName());
+    //sun->render(viewMatrix, modelMatrix, counter, NULL);
+
+    modelMatrix.rotate(counter, 0.0f, 1.0f, 0.0f);
+    modelMatrix.translate(7.0f, 0.0f, 0.0f);
+    modelMatrix.rotate(counter * -1.0f, 0.0f, 1.0f, 0.0f);
+
+    Planet *mercury = Planet::getPlanet(Name::Mercury);
+    mercury->render(viewMatrix, modelMatrix, counter, NULL);
 
     if(flag){
         this->update();
