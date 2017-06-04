@@ -28,17 +28,29 @@ void MyGLWidget::initializeGL()
 
     Caddy caddy;
     // 1. init VBO("sphere_high.obj") && set Texture map
-    //Planet *sun = Planet::getPlanet(caddy.getName());
-
+    Planet *sun = Planet::getPlanet(caddy.getNextName());
+    sun->setPlanetCharacteristics(caddy.getAxialTilt(), caddy.getOrbDistance(), caddy.getOrbSpeed(), caddy.getRotationFactor(), NULL);
     // 2. start individual shader program for each planet
-    //sun->startShaderProgram();
+    sun->startShaderProgram();
+    Planet::pushToStorage(sun);
 
-    //Planet::pushToStorage(sun);
 
-
-    Planet *mercury = Planet::getPlanet(Name::Mercury);
+    Planet *mercury = Planet::getPlanet(caddy.getNextName());
+    mercury->setPlanetCharacteristics(caddy.getAxialTilt(), caddy.getOrbDistance(), caddy.getOrbSpeed(), caddy.getRotationFactor(), sun);
     mercury->startShaderProgram();
     Planet::pushToStorage(mercury);
+
+
+    Planet *venus = Planet::getPlanet(caddy.getNextName());
+    venus->setPlanetCharacteristics(caddy.getAxialTilt(), caddy.getOrbDistance(), caddy.getOrbSpeed(), caddy.getRotationFactor(), sun);
+    venus->startShaderProgram();
+    Planet::pushToStorage(venus);
+
+
+    Planet *earth = Planet::getPlanet(caddy.getNextName());
+    earth->setPlanetCharacteristics(caddy.getAxialTilt(), caddy.getOrbDistance(), caddy.getOrbSpeed(), caddy.getRotationFactor(), sun);
+    earth->startShaderProgram();
+    Planet::pushToStorage(earth);
 
 }
 
@@ -56,21 +68,23 @@ void MyGLWidget::paintGL()
     viewMatrix.rotate(rotationAngleY, 0.0f, 1.0f, 0.0f);
     viewMatrix.rotate(rotationAngleZ, 0.0f, 0.0f, 1.0f);
 
-    modelMatrix.setToIdentity();
-    //modelMatrix.rotate(counter, 0.0f, 1.0f, 0.0f);
-    //modelMatrix.translate(0.0f, 0.0f, 0.0f);
-    //modelMatrix.rotate(counter * -1.0f, 0.0f, 1.0f, 0.0f);
+Caddy caddy;
 
-    Caddy caddy;
-    //Planet *sun = Planet::getPlanet(caddy.getName());
-    //sun->render(viewMatrix, modelMatrix, counter, NULL);
 
-    modelMatrix.rotate(counter, 0.0f, 1.0f, 0.0f);
-    modelMatrix.translate(7.0f, 0.0f, 0.0f);
-    modelMatrix.rotate(counter * -1.0f, 0.0f, 1.0f, 0.0f);
+    Planet *sun = Planet::getPlanet(caddy.getNextName());
+    sun->render(viewMatrix, counter);
 
-    Planet *mercury = Planet::getPlanet(Name::Mercury);
-    mercury->render(viewMatrix, modelMatrix, counter, NULL);
+
+    Planet *mercury = Planet::getPlanet(caddy.getNextName());
+    mercury->render(viewMatrix, counter);
+
+
+    Planet *venus = Planet::getPlanet(caddy.getNextName());
+    venus->render(viewMatrix, counter);
+
+    Planet *earth = Planet::getPlanet(caddy.getNextName());
+    earth->render(viewMatrix, counter);
+
 
     if(flag){
         this->update();
@@ -89,8 +103,14 @@ void MyGLWidget::resizeGL(int w, int h)
     // Projektion-Matrix macht aus der 3D-Welt ein 2D-Bild.
     //projektionMatrix.setToIdentity();
     //projektionMatrix.frustum(-0.05f, 0.05f, -0.05f, 0.05f, 0.1f, 1000.0f);
-    Planet *p = Planet::getPlanet(Name::Sun);
-    p->resize();
+    Planet *sun = Planet::getPlanet(Name::Sun);
+    sun->resize();
+    Planet *mercury = Planet::getPlanet(Name::Mercury);
+    mercury->resize();
+    Planet *venus = Planet::getPlanet(Name::Venus);
+    venus->resize();
+    Planet *earth = Planet::getPlanet(Name::Earth);
+    earth->resize();
     glViewport(x, y, w, h);
 }
 

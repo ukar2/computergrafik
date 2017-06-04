@@ -7,32 +7,31 @@ static map<Name, Planet*> storage;
 Planet::Planet() : vbo(QOpenGLBuffer::VertexBuffer), ibo(QOpenGLBuffer::IndexBuffer)
 {
     this->p_name = Name::Sun;
-    this->child = NULL;
+    this->parent = NULL;
     initVBO();
 }
 
 
 Planet::Planet(Name name) : vbo(QOpenGLBuffer::VertexBuffer), ibo(QOpenGLBuffer::IndexBuffer)
 {
-    //Caddy bez = Caddy::Earth;
     this->p_name = name;
-    this->child = NULL;
+    this->parent = NULL;
     initVBO();
 }
 
 
-
-Planet::Planet(Planet *name) : vbo(QOpenGLBuffer::VertexBuffer), ibo(QOpenGLBuffer::IndexBuffer)
+void Planet::setPlanetCharacteristics(float axialTilt, float orbDistance, float orbSpeed, float rotationFactor, Planet *parent)
 {
-    this->p_name = name->p_name;
-    this->child = name;
-    initVBO();
+    this->parent = parent;
+    this->axial_tilt = axialTilt;
+    this->orb_distance = orbDistance;
+    this->orb_speed = orbSpeed;
+    this->rot_factor = rotationFactor;
 }
-
-
 
 Planet *Planet::getPlanet(Name name)
 {
+    std::string path = "";
     map<Name, Planet*>::iterator iter = storage.find(name);
 
     if(iter == storage.end()){
@@ -40,46 +39,47 @@ Planet *Planet::getPlanet(Name name)
 
         switch(name){
         case Name::Sun:
-            p->setTextureMap(":/map/sunmap.jpg");
+            path = ":/map/sunmap.jpg";
             break;
         case Name::Mercury:
-            p->setTextureMap(":/map/mercurybump.jpg");
+            path = ":/map/2k_mercury.jpg";
             break;
         case Name::Venus:
-            p->setTextureMap(":/map/2k_venus_atmosphere.jpg");
+            path = ":/map/2k_venus_atmosphere.jpg";
             break;
         case Name::Earth:
-            p->setTextureMap(":/map/2k_earth_daymap.jpg");
+            path = ":/map/2k_earth_daymap.jpg";
             break;
         case Name::Mars:
-            p->setTextureMap(":/map/2k_mars.jpg");
+            path = ":/map/2k_mars.jpg";
             break;
         case Name::Jupiter:
-            p->setTextureMap(":/map/2k_jupiter.jpg");
+            path = ":/map/2k_jupiter.jpg";
             break;
         case Name::Saturn:
-            p->setTextureMap(":/map/2k_saturn.jpg");
+            path = ":/map/2k_saturn.jpg";
             break;
         case Name::Uranus:
-            p->setTextureMap(":/map/2k_uranus.jpg");
+            path = ":/map/2k_uranus.jpg";
             break;
         case Name::Neptune:
-            p->setTextureMap(":/map/2k_neptune.jpg");
+            path = ":/map/2k_neptune.jpg";
             break;
         case Name::Moon:
-            p->setTextureMap(":/map/2k_mercury.jpg");
+            path = ":/map/2k_mercury.jpg";
             break;
         case Name::Phobos:
-            p->setTextureMap(":/map/moonmap1k.jpg");
+            path = ":/map/moonmap1k.jpg";
             break;
         case Name::Deimos:
-            p->setTextureMap(":/map/moonmap1k.jpg");
+            path = ":/map/moonmap1k.jpg";
             break;
         default:
             qDebug() << "Textur map not found";
             break;
         }
 
+        p->setTextureMap(path);
         return p;
 
     }else{
@@ -87,8 +87,6 @@ Planet *Planet::getPlanet(Name name)
         return p;
     }
 
-    //return p;
-    //return p;
 }
 
 
@@ -170,19 +168,38 @@ void Planet::startShaderProgram()
 
 
 
-void Planet::render(QMatrix4x4 vMatrix, QMatrix4x4 mMatrix, GLfloat angle, Planet *child)
+void Planet::render(QMatrix4x4 vMatrix, float angle)
 {
     QMatrix4x4 matrix;
-
     matrix.setToIdentity();
-
-    matrix.rotate(angle, 0.0f, 1.0f, 0.0f);
-    //matrix.translate(0.0f, 0.0f, 0.0f);
-    //matrix.rotate(counter * -1.0f, 0.0f, 1.0f, 0.0f);
-
     viewMatrix = vMatrix;
-    modelMatrix = mMatrix * matrix;
-    draw();
+
+    if(parent == NULL){
+        modelMatrix.setToIdentity();
+
+        modelMatrix.rotate(axial_tilt, 1.0f, 0.0f, 0.0f);
+        modelMatrix.rotate(angle, 0.0f, 1.0f, 0.0f);
+
+        draw();
+
+        modelMatrix.rotate(-1.0f * angle, 0.0f, 1.0f, 0.0f);
+        modelMatrix.rotate(-1.0f * axial_tilt, 1.0f, 0.0f, 0.0f);
+
+    }else{
+        modelMatrix = parent->modelMatrix;
+        modelMatrix.rotate(angle * orb_speed, 0.0f, 1.0f, 0.0f);
+        modelMatrix.translate(orb_distance, 0.0f, 0.0f);
+        modelMatrix.rotate(-1.0f * angle * orb_speed, 0.0f, 1.0f, 0.0f);
+
+        modelMatrix.rotate(axial_tilt, 1.0f, 0.0f, 0.0f);
+        modelMatrix.rotate(angle * rot_factor, 0.0f, 1.0f, 0.0f);
+
+        draw();
+
+        modelMatrix.rotate(-1.0f * angle * rot_factor, 0.0f, 1.0f, 0.0f);
+        modelMatrix.rotate(-1.0f * axial_tilt, 1.0f, 0.0f, 0.0f);
+
+    }
 
 }
 
@@ -197,7 +214,7 @@ void Planet::draw()
     int attrVertices = 0;
     attrVertices = shaderProgram.attributeLocation("vert");
 
-    int attrTexCoords = 3;
+    int attrTexCoords = 1;
     attrTexCoords = shaderProgram.attributeLocation("texCoord");
 
 
@@ -206,7 +223,7 @@ void Planet::draw()
 
 
     //planet.bindTexture(&shaderProgram, "texture");
-    qTex->bind(0);
+    qTex->bind();
     shaderProgram.setUniformValue("texture", 0);
 
 

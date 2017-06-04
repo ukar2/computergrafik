@@ -26,7 +26,7 @@ public:
     Planet(Planet *name);
 
     Name p_name;
-    Planet *child;
+    Planet *parent;
     GLfloat *vboData;
     GLuint *indexData;
     unsigned int vboLength;
@@ -42,9 +42,10 @@ public:
     void bindTexture(QOpenGLShaderProgram *shaderProgram, string texture);
     void releaseTexture();  // kann sein dass alle drei ^ besser in eine
     void startShaderProgram();
-    void render(QMatrix4x4 vMatrix, QMatrix4x4 mMatrix, GLfloat angle, Planet *child);
+    void render(QMatrix4x4 vMatrix, float angle);
     void draw();
     void resize();
+    void setPlanetCharacteristics(float axialTilt, float orbDistance, float orbSpeed, float rotationFactor, Planet *parent);
 
 private:
     QOpenGLTexture *qTex;
@@ -55,6 +56,11 @@ private:
     QMatrix4x4 projektionMatrix;
     QMatrix4x4 viewMatrix;
     std::stack<QMatrix4x4> matrixStack;
+
+    float orb_speed;
+    float rot_factor;
+    float orb_distance;
+    float axial_tilt;
 
 };
 
