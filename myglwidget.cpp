@@ -29,28 +29,64 @@ void MyGLWidget::initializeGL()
     Caddy caddy;
     // 1. init VBO("sphere_high.obj") && set Texture map
     Planet *sun = Planet::getPlanet(caddy.getNextName());
-    sun->setPlanetCharacteristics(caddy.getAxialTilt(), caddy.getOrbDistance(), caddy.getOrbSpeed(), caddy.getRotationFactor(), NULL);
+    sun->setPlanetCharacteristics(caddy.getAxialTilt(), caddy.getOrbDistance(), caddy.getOrbSpeed(), caddy.getRotationFactor(), caddy.getScaleFactor(), NULL);
     // 2. start individual shader program for each planet
     sun->startShaderProgram();
     Planet::pushToStorage(sun);
 
 
     Planet *mercury = Planet::getPlanet(caddy.getNextName());
-    mercury->setPlanetCharacteristics(caddy.getAxialTilt(), caddy.getOrbDistance(), caddy.getOrbSpeed(), caddy.getRotationFactor(), sun);
+    mercury->setPlanetCharacteristics(caddy.getAxialTilt(), caddy.getOrbDistance(), caddy.getOrbSpeed(), caddy.getRotationFactor(), caddy.getScaleFactor(), sun);
     mercury->startShaderProgram();
     Planet::pushToStorage(mercury);
 
 
     Planet *venus = Planet::getPlanet(caddy.getNextName());
-    venus->setPlanetCharacteristics(caddy.getAxialTilt(), caddy.getOrbDistance(), caddy.getOrbSpeed(), caddy.getRotationFactor(), sun);
+    venus->setPlanetCharacteristics(caddy.getAxialTilt(), caddy.getOrbDistance(), caddy.getOrbSpeed(), caddy.getRotationFactor(), caddy.getScaleFactor(), sun);
     venus->startShaderProgram();
     Planet::pushToStorage(venus);
 
 
     Planet *earth = Planet::getPlanet(caddy.getNextName());
-    earth->setPlanetCharacteristics(caddy.getAxialTilt(), caddy.getOrbDistance(), caddy.getOrbSpeed(), caddy.getRotationFactor(), sun);
+    earth->setPlanetCharacteristics(caddy.getAxialTilt(), caddy.getOrbDistance(), caddy.getOrbSpeed(), caddy.getRotationFactor(), caddy.getScaleFactor(), sun);
     earth->startShaderProgram();
     Planet::pushToStorage(earth);
+
+    Planet *mars = Planet::getPlanet(caddy.getNextName());
+    mars->setPlanetCharacteristics(caddy.getAxialTilt(), caddy.getOrbDistance(), caddy.getOrbSpeed(), caddy.getRotationFactor(), caddy.getScaleFactor(), sun);
+    mars->startShaderProgram();
+    Planet::pushToStorage(mars);
+
+
+    Planet *jupiter = Planet::getPlanet(caddy.getNextName());
+    jupiter->setPlanetCharacteristics(caddy.getAxialTilt(), caddy.getOrbDistance(), caddy.getOrbSpeed(), caddy.getRotationFactor(), caddy.getScaleFactor(), sun);
+    jupiter->startShaderProgram();
+    Planet::pushToStorage(jupiter);
+
+    Planet *saturn = Planet::getPlanet(caddy.getNextName());
+    saturn->setPlanetCharacteristics(caddy.getAxialTilt(), caddy.getOrbDistance(), caddy.getOrbSpeed(), caddy.getRotationFactor(), caddy.getScaleFactor(), sun);
+    saturn->startShaderProgram();
+    Planet::pushToStorage(saturn);
+
+    Planet *uranus = Planet::getPlanet(caddy.getNextName());
+    uranus->setPlanetCharacteristics(caddy.getAxialTilt(), caddy.getOrbDistance(), caddy.getOrbSpeed(), caddy.getRotationFactor(), caddy.getScaleFactor(), sun);
+    uranus->startShaderProgram();
+    Planet::pushToStorage(uranus);
+
+    Planet *neptune = Planet::getPlanet(caddy.getNextName());
+    neptune->setPlanetCharacteristics(caddy.getAxialTilt(), caddy.getOrbDistance(), caddy.getOrbSpeed(), caddy.getRotationFactor(), caddy.getScaleFactor(), sun);
+    neptune->startShaderProgram();
+    Planet::pushToStorage(neptune);
+
+    Planet *moon = Planet::getPlanet(caddy.getNextName());
+    moon->setPlanetCharacteristics(caddy.getAxialTilt(), caddy.getOrbDistance(), caddy.getOrbSpeed(), caddy.getRotationFactor(), caddy.getScaleFactor(), earth);
+    moon->startShaderProgram();
+    Planet::pushToStorage(moon);
+
+    Planet *phobos = Planet::getPlanet(caddy.getNextName());
+    phobos->setPlanetCharacteristics(caddy.getAxialTilt(), caddy.getOrbDistance(), caddy.getOrbSpeed(), caddy.getRotationFactor(), caddy.getScaleFactor(), mars);
+    phobos->startShaderProgram();
+    Planet::pushToStorage(phobos);
 
 }
 
@@ -85,6 +121,27 @@ Caddy caddy;
     Planet *earth = Planet::getPlanet(caddy.getNextName());
     earth->render(viewMatrix, counter);
 
+    Planet *mars = Planet::getPlanet(caddy.getNextName());
+    mars->render(viewMatrix, counter);
+
+    Planet *jupiter = Planet::getPlanet(caddy.getNextName());
+    jupiter->render(viewMatrix, counter);
+
+    Planet *saturn = Planet::getPlanet(caddy.getNextName());
+    saturn->render(viewMatrix, counter);
+
+    Planet *uranus = Planet::getPlanet(caddy.getNextName());
+    uranus->render(viewMatrix, counter);
+
+    Planet *neptune = Planet::getPlanet(caddy.getNextName());
+    neptune->render(viewMatrix, counter);
+
+    Planet *moon = Planet::getPlanet(caddy.getNextName());
+    moon->render(viewMatrix, counter);
+
+    Planet *phobos = Planet::getPlanet(caddy.getNextName());
+    phobos->render(viewMatrix, counter);
+
 
     if(flag){
         this->update();
@@ -105,12 +162,38 @@ void MyGLWidget::resizeGL(int w, int h)
     //projektionMatrix.frustum(-0.05f, 0.05f, -0.05f, 0.05f, 0.1f, 1000.0f);
     Planet *sun = Planet::getPlanet(Name::Sun);
     sun->resize();
+
     Planet *mercury = Planet::getPlanet(Name::Mercury);
     mercury->resize();
+
     Planet *venus = Planet::getPlanet(Name::Venus);
     venus->resize();
+
     Planet *earth = Planet::getPlanet(Name::Earth);
     earth->resize();
+
+    Planet *mars = Planet::getPlanet(Name::Mars);
+    mars->resize();
+
+    Planet *jupiter = Planet::getPlanet(Name::Jupiter);
+    jupiter->resize();
+
+    Planet *saturn = Planet::getPlanet(Name::Saturn);
+    saturn->resize();
+
+    Planet *uranus = Planet::getPlanet(Name::Uranus);
+    uranus->resize();
+
+    Planet *neptune = Planet::getPlanet(Name::Neptune);
+    neptune->resize();
+
+    Planet *moon = Planet::getPlanet(Name::Moon);
+    moon->resize();
+
+    Planet *phobos = Planet::getPlanet(Name::Phobos);
+    phobos->resize();
+
+
     glViewport(x, y, w, h);
 }
 
@@ -123,7 +206,7 @@ void MyGLWidget::initializeComponents()
     wheel = 0;
     moveX = 0.0f;
     moveY = 0.0f;
-    moveZ = -7.0f;
+    moveZ = -17.0f;
     rotationAngleX = 0.0f;
     rotationAngleY = 0.0f;
     rotationAngleZ = 0.0f;

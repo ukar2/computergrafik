@@ -31,6 +31,7 @@ public:
     float getOrbDistance();
     float getRotationFactor();
     float getAxialTilt();
+    float getScaleFactor();
     Name getNextName();
 
     Name planet;
@@ -39,6 +40,7 @@ public:
     float rot_factor;
     float orb_distance;
     float axial_tilt;
+    float scale_factor;
 
 };
 

@@ -27,8 +27,7 @@ public:
 
     Name p_name;
     Planet *parent;
-    GLfloat *vboData;
-    GLuint *indexData;
+
     unsigned int vboLength;
     unsigned int iboLength;
 
@@ -45,7 +44,7 @@ public:
     void render(QMatrix4x4 vMatrix, float angle);
     void draw();
     void resize();
-    void setPlanetCharacteristics(float axialTilt, float orbDistance, float orbSpeed, float rotationFactor, Planet *parent);
+    void setPlanetCharacteristics(float axialTilt, float orbDistance, float orbSpeed, float rotationFactor, float scale_factor, Planet *parent);
 
 private:
     QOpenGLTexture *qTex;
@@ -61,6 +60,7 @@ private:
     float rot_factor;
     float orb_distance;
     float axial_tilt;
+    float scale_factor;
 
 };
 

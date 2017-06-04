@@ -20,13 +20,14 @@ Planet::Planet(Name name) : vbo(QOpenGLBuffer::VertexBuffer), ibo(QOpenGLBuffer:
 }
 
 
-void Planet::setPlanetCharacteristics(float axialTilt, float orbDistance, float orbSpeed, float rotationFactor, Planet *parent)
+void Planet::setPlanetCharacteristics(float axialTilt, float orbDistance, float orbSpeed, float rotationFactor, float scale_factor, Planet *parent)
 {
     this->parent = parent;
     this->axial_tilt = axialTilt;
     this->orb_distance = orbDistance;
     this->orb_speed = orbSpeed;
     this->rot_factor = rotationFactor;
+    this->scale_factor = scale_factor;
 }
 
 Planet *Planet::getPlanet(Name name)
@@ -57,7 +58,7 @@ Planet *Planet::getPlanet(Name name)
             path = ":/map/2k_jupiter.jpg";
             break;
         case Name::Saturn:
-            path = ":/map/2k_saturn.jpg";
+            path = ":/map/saturnmap.jpg";
             break;
         case Name::Uranus:
             path = ":/map/2k_uranus.jpg";
@@ -107,35 +108,49 @@ void Planet::pushToStorage(Planet *planet)
 
 void Planet::initVBO()
 {
+    GLfloat *vboData;
+    GLuint *indexData;
     ModelLoader model;
     bool res = model.loadObjectFromFile("C:/Users/rempel/qtworkspace/CG-Praktikum/Model/sphere_high.obj");
 
+
     if(res)
     {
-        vboLength = model.lengthOfVBO(0, false, true);
-        iboLength = model.lengthOfIndexArray();
+        if(model.hasTextureCoordinates(0)){
+            vboLength = model.lengthOfVBO(0, true, true);
+            iboLength = model.lengthOfIndexArray();
 
-        vboData = new GLfloat[vboLength];
-        indexData = new GLuint[iboLength];
-        model.genVBO(vboData, 0, false, true);
-        model.genIndexArray(indexData);
+            vboData = new GLfloat[vboLength];
+            indexData = new GLuint[iboLength];
+            model.genVBO(vboData, 0, true, true);
+            model.genIndexArray(indexData);
+
+        }else{
+            vboLength = model.lengthOfVBO(0, false, true);
+            iboLength = model.lengthOfIndexArray();
+
+            vboData = new GLfloat[vboLength];
+            indexData = new GLuint[iboLength];
+            model.genVBO(vboData, 0, false, true);
+            model.genIndexArray(indexData);
+        }
+
+        vbo.create();
+        vbo.bind();
+        vbo.setUsagePattern(QOpenGLBuffer::StaticDraw);
+        vbo.allocate(vboData, sizeof(GLfloat) * vboLength);
+        vbo.release();
+
+        ibo.create();
+        ibo.bind();
+        ibo.setUsagePattern(QOpenGLBuffer::StaticDraw);
+        ibo.allocate(indexData, sizeof(GLuint) * iboLength);
+        ibo.release();
+
     }else{
         qDebug() << "ModelLoader error ";
     }
     // --- end.
-
-
-    vbo.create();
-    vbo.bind();
-    vbo.setUsagePattern(QOpenGLBuffer::StaticDraw);
-    vbo.allocate((const void*)vboData, sizeof(GLfloat) * (GLfloat)vboLength);
-    vbo.release();
-
-    ibo.create();
-    ibo.bind();
-    ibo.setUsagePattern(QOpenGLBuffer::StaticDraw);
-    ibo.allocate((const void*)indexData, sizeof(GLuint) * iboLength);
-    ibo.release();
 
 }
 
@@ -179,9 +194,9 @@ void Planet::render(QMatrix4x4 vMatrix, float angle)
 
         modelMatrix.rotate(axial_tilt, 1.0f, 0.0f, 0.0f);
         modelMatrix.rotate(angle, 0.0f, 1.0f, 0.0f);
-
+        modelMatrix.scale(scale_factor);
         draw();
-
+        modelMatrix.scale(scale_factor * (1.0f/(2.0f * scale_factor)));
         modelMatrix.rotate(-1.0f * angle, 0.0f, 1.0f, 0.0f);
         modelMatrix.rotate(-1.0f * axial_tilt, 1.0f, 0.0f, 0.0f);
 
@@ -191,14 +206,14 @@ void Planet::render(QMatrix4x4 vMatrix, float angle)
         modelMatrix.translate(orb_distance, 0.0f, 0.0f);
         modelMatrix.rotate(-1.0f * angle * orb_speed, 0.0f, 1.0f, 0.0f);
 
-        modelMatrix.rotate(axial_tilt, 1.0f, 0.0f, 0.0f);
+        modelMatrix.rotate(axial_tilt, 0.0f, 0.0f, 1.0f);
         modelMatrix.rotate(angle * rot_factor, 0.0f, 1.0f, 0.0f);
-
+        modelMatrix.scale(scale_factor);
         draw();
-
+        modelMatrix.rotate(-1.0f * axial_tilt, 0.0f, 0.0f, 1.0f);
         modelMatrix.rotate(-1.0f * angle * rot_factor, 0.0f, 1.0f, 0.0f);
-        modelMatrix.rotate(-1.0f * axial_tilt, 1.0f, 0.0f, 0.0f);
 
+        modelMatrix.scale(scale_factor * (1.0f/(2.0f * scale_factor)));
     }
 
 }
@@ -241,13 +256,13 @@ void Planet::draw()
 
 
     int offset = 0;
-    int stride = 8 * sizeof(GLfloat);
+    int stride = 12 * sizeof(GLfloat);
 
     shaderProgram.setAttributeBuffer(attrVertices, GL_FLOAT, offset, 4, stride);
     offset += 4 * sizeof(GLfloat);
     shaderProgram.setAttributeBuffer(attrTexCoords, GL_FLOAT, offset, 4, stride);
 
-    glDrawElements(GL_QUADS, iboLength, GL_UNSIGNED_INT, (GLvoid*)NULL);
+    glDrawElements(GL_TRIANGLES, iboLength, GL_UNSIGNED_INT, (GLvoid*)NULL);
     glFlush();
 
     shaderProgram.disableAttributeArray(attrVertices);
@@ -282,10 +297,7 @@ Planet::~Planet()
     vbo.release();
     ibo.release();
 
-    if(!vboData)
-        delete vboData;
-    if(!indexData)
-        delete indexData;
+
     if(!qTex)
         delete qTex;
 }
